@@ -1,55 +1,50 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { DashboardLayout } from './components/DashboardLayout';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Layout } from './components/layout/Layout';
 
-// Import views as they're created
-import { DashboardOverview } from './views/DashboardOverview';
-import { PropertiesView } from './views/PropertiesView';
-import { TenantsView } from './views/TenantsView';
-import { CashflowView } from './views/CashflowView';
-import { FinancialOverview } from './views/FinancialOverview';
-
-// Placeholder component for views not yet implemented
-const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
-  <div className="max-w-4xl mx-auto">
-    <div className="bg-white rounded-lg shadow-md p-8 text-center">
-      <h2 className="text-3xl font-bold text-gray-900 mb-4">{title}</h2>
-      <p className="text-gray-600 mb-6">
-        This module is part of the VGK Property Command system.
-      </p>
-      <p className="text-sm text-gray-500">
-        The full implementation includes all features discussed in the requirements.
-      </p>
-    </div>
-  </div>
-);
+// Views
+import { Dashboard } from './views/Dashboard';
+import { OPSP } from './views/OPSP';
+import { Rocks } from './views/Rocks';
+import { KPIs } from './views/KPIs';
+import { CriticalNumbers } from './views/CriticalNumbers';
+import { Huddles } from './views/Huddles';
+import { Properties } from './views/Properties';
+import { Tenants } from './views/Tenants';
+import { Maintenance } from './views/Maintenance';
+import { Vendors } from './views/Vendors';
+import { Accounts } from './views/Accounts';
+import { Ledger } from './views/Ledger';
+import { Cashflow } from './views/Cashflow';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<DashboardLayout />}>
-        <Route index element={<DashboardOverview />} />
+    <Router>
+      <Layout>
+        <Routes>
+          {/* Dashboard */}
+          <Route path="/" element={<Dashboard />} />
 
-        {/* Strategic Planning */}
-        <Route path="opsp" element={<ComingSoon title="One Page Strategic Plan" />} />
-        <Route path="rocks" element={<ComingSoon title="Quarterly Rocks" />} />
-        <Route path="kpis" element={<ComingSoon title="Key Performance Indicators" />} />
-        <Route path="critical-numbers" element={<ComingSoon title="Critical Numbers" />} />
-        <Route path="huddles" element={<ComingSoon title="Daily & Weekly Huddles" />} />
+          {/* Strategic Planning */}
+          <Route path="/opsp" element={<OPSP />} />
+          <Route path="/rocks" element={<Rocks />} />
+          <Route path="/kpis" element={<KPIs />} />
+          <Route path="/critical-numbers" element={<CriticalNumbers />} />
+          <Route path="/huddles" element={<Huddles />} />
 
-        {/* Property Operations */}
-        <Route path="properties" element={<PropertiesView />} />
-        <Route path="tenants" element={<TenantsView />} />
-        <Route path="maintenance" element={<ComingSoon title="Maintenance Requests" />} />
-        <Route path="vendors" element={<ComingSoon title="Vendor Management" />} />
+          {/* Property Management */}
+          <Route path="/properties" element={<Properties />} />
+          <Route path="/tenants" element={<Tenants />} />
+          <Route path="/maintenance" element={<Maintenance />} />
+          <Route path="/vendors" element={<Vendors />} />
 
-        {/* Financials */}
-        <Route path="cashflow" element={<CashflowView />} />
-        <Route path="chart-of-accounts" element={<ComingSoon title="Chart of Accounts" />} />
-        <Route path="ledger" element={<ComingSoon title="Transaction Ledger" />} />
-        <Route path="financial-overview" element={<FinancialOverview />} />
-      </Route>
-    </Routes>
+          {/* Financial */}
+          <Route path="/accounts" element={<Accounts />} />
+          <Route path="/ledger" element={<Ledger />} />
+          <Route path="/cashflow" element={<Cashflow />} />
+        </Routes>
+      </Layout>
+    </Router>
   );
 }
 
