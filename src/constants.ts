@@ -15,7 +15,6 @@ import type {
   GeneralLedgerEntry,
   CashflowForecast,
   CashflowEntry,
-  AccountCategory,
 } from './types';
 
 export const APP_NAME = 'Verne-Grisworld-Koch';
