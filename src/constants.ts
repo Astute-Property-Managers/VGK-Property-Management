@@ -15,8 +15,8 @@ import type {
   GeneralLedgerEntry,
   CashflowForecast,
   CashflowEntry,
+  AccountCategory,
 } from './types';
-import { AccountCategory } from './types';
 
 export const APP_NAME = 'Verne-Grisworld-Koch';
 export const APP_TAGLINE = 'Property Command - Strategic Excellence for Uganda';
@@ -354,35 +354,35 @@ export const INITIAL_VENDORS: Vendor[] = [
 
 export const INITIAL_CHART_OF_ACCOUNTS: Account[] = [
   // ASSETS
-  { id: 'acc-1000', number: '1000', name: 'Cash at Bank', category: AccountCategory.Asset, type: 'Current Asset', description: 'Main operating bank account', balance: 0 },
-  { id: 'acc-1000-01', number: '1000.01', name: 'Cash at Bank - Centenary', category: AccountCategory.Asset, type: 'Current Asset', description: 'Centenary Bank - Account ending in 1234' },
-  { id: 'acc-1100', number: '1100', name: 'Accounts Receivable', category: AccountCategory.Asset, type: 'Current Asset', description: 'Rent and other amounts due from tenants' },
-  { id: 'acc-1200', number: '1200', name: 'Security Deposits Held', category: AccountCategory.Asset, type: 'Current Asset', description: 'Tenant security deposits in escrow' },
-  { id: 'acc-1500', number: '1500', name: 'Investment Property', category: AccountCategory.Asset, type: 'Fixed Asset', description: 'Real estate held for rental income (IAS 40)' },
+  { id: 'acc-1000', number: '1000', name: 'Cash at Bank', category: 'Asset', type: 'Current Asset', description: 'Main operating bank account', balance: 0 },
+  { id: 'acc-1000-01', number: '1000.01', name: 'Cash at Bank - Centenary', category: 'Asset', type: 'Current Asset', description: 'Centenary Bank - Account ending in 1234' },
+  { id: 'acc-1100', number: '1100', name: 'Accounts Receivable', category: 'Asset', type: 'Current Asset', description: 'Rent and other amounts due from tenants' },
+  { id: 'acc-1200', number: '1200', name: 'Security Deposits Held', category: 'Asset', type: 'Current Asset', description: 'Tenant security deposits in escrow' },
+  { id: 'acc-1500', number: '1500', name: 'Investment Property', category: 'Asset', type: 'Fixed Asset', description: 'Real estate held for rental income (IAS 40)' },
 
   // LIABILITIES
-  { id: 'acc-2000', number: '2000', name: 'Accounts Payable', category: AccountCategory.Liability, type: 'Current Liability', description: 'Amounts owed to vendors and contractors' },
-  { id: 'acc-2100', number: '2100', name: 'Security Deposits Liability', category: AccountCategory.Liability, type: 'Current Liability', description: 'Obligation to return tenant deposits' },
-  { id: 'acc-2200', number: '2200', name: 'Accrued Expenses', category: AccountCategory.Liability, type: 'Current Liability', description: 'Expenses incurred but not yet paid' },
+  { id: 'acc-2000', number: '2000', name: 'Accounts Payable', category: 'Liability', type: 'Current Liability', description: 'Amounts owed to vendors and contractors' },
+  { id: 'acc-2100', number: '2100', name: 'Security Deposits Liability', category: 'Liability', type: 'Current Liability', description: 'Obligation to return tenant deposits' },
+  { id: 'acc-2200', number: '2200', name: 'Accrued Expenses', category: 'Liability', type: 'Current Liability', description: 'Expenses incurred but not yet paid' },
 
   // EQUITY
-  { id: 'acc-3000', number: '3000', name: 'Owner\'s Equity', category: AccountCategory.Equity, type: 'Equity', description: 'Capital contributed by owners' },
-  { id: 'acc-3100', number: '3100', name: 'Retained Earnings', category: AccountCategory.Equity, type: 'Equity', description: 'Accumulated profits reinvested' },
+  { id: 'acc-3000', number: '3000', name: 'Owner\'s Equity', category: 'Equity', type: 'Equity', description: 'Capital contributed by owners' },
+  { id: 'acc-3100', number: '3100', name: 'Retained Earnings', category: 'Equity', type: 'Equity', description: 'Accumulated profits reinvested' },
 
   // INCOME
-  { id: 'acc-4000', number: '4000', name: 'Rental Income - Residential', category: AccountCategory.Income, type: 'Operating Revenue', description: 'Monthly rent from residential tenants' },
-  { id: 'acc-4100', number: '4100', name: 'Late Fees', category: AccountCategory.Income, type: 'Operating Revenue', description: 'Late payment fees' },
-  { id: 'acc-4200', number: '4200', name: 'Other Income', category: AccountCategory.Income, type: 'Operating Revenue', description: 'Application fees, pet fees, utility reimbursements' },
+  { id: 'acc-4000', number: '4000', name: 'Rental Income - Residential', category: 'Income', type: 'Operating Revenue', description: 'Monthly rent from residential tenants' },
+  { id: 'acc-4100', number: '4100', name: 'Late Fees', category: 'Income', type: 'Operating Revenue', description: 'Late payment fees' },
+  { id: 'acc-4200', number: '4200', name: 'Other Income', category: 'Income', type: 'Operating Revenue', description: 'Application fees, pet fees, utility reimbursements' },
 
   // EXPENSES
-  { id: 'acc-5000', number: '5000', name: 'Maintenance & Repairs', category: AccountCategory.Expense, type: 'Operating Expense', description: 'Routine and emergency repairs' },
-  { id: 'acc-5000-01', number: '5000.01', name: 'Maintenance - Plumbing', category: AccountCategory.Expense, type: 'Operating Expense', description: 'Plumbing repairs and maintenance' },
-  { id: 'acc-5000-02', number: '5000.02', name: 'Maintenance - Electrical', category: AccountCategory.Expense, type: 'Operating Expense', description: 'Electrical repairs and maintenance' },
-  { id: 'acc-5100', number: '5100', name: 'Utilities', category: AccountCategory.Expense, type: 'Operating Expense', description: 'Water, electricity for common areas' },
-  { id: 'acc-5200', number: '5200', name: 'Property Tax', category: AccountCategory.Expense, type: 'Operating Expense', description: 'Local council property taxes' },
-  { id: 'acc-5300', number: '5300', name: 'Insurance', category: AccountCategory.Expense, type: 'Operating Expense', description: 'Property and liability insurance' },
-  { id: 'acc-5400', number: '5400', name: 'Management Fees', category: AccountCategory.Expense, type: 'Operating Expense', description: 'Property management fees' },
-  { id: 'acc-5500', number: '5500', name: 'Administrative Expenses', category: AccountCategory.Expense, type: 'Operating Expense', description: 'Office, software, communications' },
+  { id: 'acc-5000', number: '5000', name: 'Maintenance & Repairs', category: 'Expense', type: 'Operating Expense', description: 'Routine and emergency repairs' },
+  { id: 'acc-5000-01', number: '5000.01', name: 'Maintenance - Plumbing', category: 'Expense', type: 'Operating Expense', description: 'Plumbing repairs and maintenance' },
+  { id: 'acc-5000-02', number: '5000.02', name: 'Maintenance - Electrical', category: 'Expense', type: 'Operating Expense', description: 'Electrical repairs and maintenance' },
+  { id: 'acc-5100', number: '5100', name: 'Utilities', category: 'Expense', type: 'Operating Expense', description: 'Water, electricity for common areas' },
+  { id: 'acc-5200', number: '5200', name: 'Property Tax', category: 'Expense', type: 'Operating Expense', description: 'Local council property taxes' },
+  { id: 'acc-5300', number: '5300', name: 'Insurance', category: 'Expense', type: 'Operating Expense', description: 'Property and liability insurance' },
+  { id: 'acc-5400', number: '5400', name: 'Management Fees', category: 'Expense', type: 'Operating Expense', description: 'Property management fees' },
+  { id: 'acc-5500', number: '5500', name: 'Administrative Expenses', category: 'Expense', type: 'Operating Expense', description: 'Office, software, communications' },
 ];
 
 // ============================================================================
