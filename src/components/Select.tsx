@@ -27,7 +27,7 @@ export const Select: React.FC<SelectProps> = ({
         {...props}
       >
         {options.map((option) => (
-          <key={option.value} value={option.value}>
+          <option key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
