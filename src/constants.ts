@@ -15,8 +15,8 @@ import type {
   GeneralLedgerEntry,
   CashflowForecast,
   CashflowEntry,
-  AccountCategory,
 } from './types';
+import { AccountCategory } from './types';
 
 export const APP_NAME = 'Verne-Grisworld-Koch';
 export const APP_TAGLINE = 'Property Command - Strategic Excellence for Uganda';

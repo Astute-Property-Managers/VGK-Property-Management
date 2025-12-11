@@ -65,8 +65,15 @@ export function isValidUgandanPhone(phone: string): boolean {
  * @param value - Value to validate
  * @returns True if valid number
  */
-export function isValidNumber(value: any): boolean {
-  return !isNaN(parseFloat(value)) && isFinite(value);
+export function isValidNumber(value: unknown): boolean {
+  if (typeof value === 'number') {
+    return !isNaN(value) && isFinite(value);
+  }
+  if (typeof value === 'string') {
+    const num = parseFloat(value);
+    return !isNaN(num) && isFinite(num);
+  }
+  return false;
 }
 
 /**
