@@ -178,7 +178,9 @@ export const PropertiesView: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">
-                    {((property.occupiedUnits / property.totalUnits) * 100).toFixed(1)}%
+                    {property.totalUnits > 0
+                      ? ((property.occupiedUnits / property.totalUnits) * 100).toFixed(1)
+                      : '0.0'}%
                   </div>
                   <div className="text-xs text-gray-500">
                     {property.totalUnits - property.occupiedUnits} vacant
