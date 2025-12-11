@@ -8,6 +8,8 @@ import { PropertiesView } from './views/PropertiesView';
 import { TenantsView } from './views/TenantsView';
 import { CashflowView } from './views/CashflowView';
 import { FinancialOverview } from './views/FinancialOverview';
+import { RocksView } from './views/RocksView';
+import { KPIsView } from './views/KPIsView';
 
 // Placeholder component for views not yet implemented
 const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
@@ -32,8 +34,8 @@ function App() {
 
         {/* Strategic Planning */}
         <Route path="opsp" element={<ComingSoon title="One Page Strategic Plan" />} />
-        <Route path="rocks" element={<ComingSoon title="Quarterly Rocks" />} />
-        <Route path="kpis" element={<ComingSoon title="Key Performance Indicators" />} />
+        <Route path="rocks" element={<RocksView />} />
+        <Route path="kpis" element={<KPIsView />} />
         <Route path="critical-numbers" element={<ComingSoon title="Critical Numbers" />} />
         <Route path="huddles" element={<ComingSoon title="Daily & Weekly Huddles" />} />
 
