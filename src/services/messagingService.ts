@@ -179,3 +179,29 @@ export function generatePaymentConfirmationMessage(
 ): string {
   return `Dear ${tenantName},\n\nWe confirm receipt of your payment of ${formatUGX(amount)}.\n\nReference: ${referenceNumber}\nDate: ${new Date().toLocaleDateString('en-UG')}\n\nThank you for your prompt payment.\n\n- VGK Property Management`;
 }
+
+/**
+ * Sends bulk messages to multiple recipients
+ * @param messages - Array of message objects with recipient and message
+ * @param type - Message type ('sms' or 'whatsapp')
+ * @returns Promise resolving to success status
+ */
+export async function sendBulkMessages(
+  messages: Array<{ recipient: string; message: string }>,
+  type: 'sms' | 'whatsapp'
+): Promise<boolean> {
+  try {
+    const sendFunction = type === 'sms' ? sendSms : sendWhatsAppMessage;
+
+    // Send all messages in parallel
+    const promises = messages.map(({ recipient, message }) =>
+      sendFunction(recipient, message)
+    );
+
+    await Promise.all(promises);
+    return true;
+  } catch (error) {
+    console.error('Failed to send bulk messages:', error);
+    throw error;
+  }
+}

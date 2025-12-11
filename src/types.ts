@@ -157,13 +157,7 @@ export interface Vendor {
 // FINANCIAL TYPES (CPA Uganda / IFRS / Lean Accounting)
 // ============================================================================
 
-export enum AccountCategory {
-  Asset = 'Asset',
-  Liability = 'Liability',
-  Equity = 'Equity',
-  Income = 'Income',
-  Expense = 'Expense'
-}
+export type AccountCategory = 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense';
 
 export interface Account {
   id: string;
