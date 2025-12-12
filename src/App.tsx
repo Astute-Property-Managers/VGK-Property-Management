@@ -10,6 +10,10 @@ import { CashflowView } from './views/CashflowView';
 import { FinancialOverview } from './views/FinancialOverview';
 import { RocksView } from './views/RocksView';
 import { KPIsView } from './views/KPIsView';
+import { CriticalNumbersView } from './views/CriticalNumbersView';
+import { HuddlesView } from './views/HuddlesView';
+import { MaintenanceView } from './views/MaintenanceView';
+import { VendorsView } from './views/VendorsView';
 
 // Placeholder component for views not yet implemented
 const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
@@ -36,14 +40,14 @@ function App() {
         <Route path="opsp" element={<ComingSoon title="One Page Strategic Plan" />} />
         <Route path="rocks" element={<RocksView />} />
         <Route path="kpis" element={<KPIsView />} />
-        <Route path="critical-numbers" element={<ComingSoon title="Critical Numbers" />} />
-        <Route path="huddles" element={<ComingSoon title="Daily & Weekly Huddles" />} />
+        <Route path="critical-numbers" element={<CriticalNumbersView />} />
+        <Route path="huddles" element={<HuddlesView />} />
 
         {/* Property Operations */}
         <Route path="properties" element={<PropertiesView />} />
         <Route path="tenants" element={<TenantsView />} />
-        <Route path="maintenance" element={<ComingSoon title="Maintenance Requests" />} />
-        <Route path="vendors" element={<ComingSoon title="Vendor Management" />} />
+        <Route path="maintenance" element={<MaintenanceView />} />
+        <Route path="vendors" element={<VendorsView />} />
 
         {/* Financials */}
         <Route path="cashflow" element={<CashflowView />} />
