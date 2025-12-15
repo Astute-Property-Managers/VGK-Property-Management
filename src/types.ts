@@ -239,6 +239,316 @@ export interface BalanceSheet {
 }
 
 // ============================================================================
+// TENANT SCREENING TYPES (Griswold Standard)
+// ============================================================================
+
+export type ScreeningStatus = 'In Progress' | 'Approved' | 'Rejected' | 'Pending Review';
+
+export interface TenantScreeningApplication {
+  id: string;
+  applicantName: string;
+  email: string;
+  phone: string;
+  propertyId: string;
+  unitNumber: string;
+  applicationDate: string;
+  status: ScreeningStatus;
+
+  // Employment Verification
+  currentEmployer?: string;
+  jobTitle?: string;
+  monthlyIncome?: number;
+  employmentVerified: boolean;
+
+  // Credit & Background
+  creditScore?: number;
+  creditCheckDate?: string;
+  backgroundCheckStatus?: 'Pending' | 'Clear' | 'Issues Found';
+  backgroundCheckDate?: string;
+
+  // Rental History
+  previousLandlord?: string;
+  previousLandlordContact?: string;
+  rentalHistoryVerified: boolean;
+  evictionHistory: boolean;
+
+  // References
+  references: {
+    name: string;
+    relationship: string;
+    contact: string;
+    verified: boolean;
+  }[];
+
+  // Decision
+  reviewNotes: string;
+  reviewedBy?: string;
+  reviewDate?: string;
+  denialReason?: string;
+}
+
+// ============================================================================
+// LEASE RENEWAL TYPES
+// ============================================================================
+
+export type LeaseRenewalStatus = 'Upcoming' | 'Notice Sent' | 'Negotiating' | 'Accepted' | 'Declined' | 'Expired';
+
+export interface LeaseRenewal {
+  id: string;
+  tenantId: string;
+  propertyId: string;
+  unitNumber: string;
+
+  // Current Lease Info
+  currentLeaseEndDate: string;
+  currentRentAmount: number;
+
+  // Renewal Details
+  renewalStatus: LeaseRenewalStatus;
+  notificationDate?: string; // Date 120-day notice was sent
+  proposedRentAmount?: number;
+  proposedLeaseTermMonths?: number;
+
+  // Communication Log
+  communicationLog: {
+    date: string;
+    type: 'Email' | 'Call' | 'In-Person' | 'SMS';
+    summary: string;
+    contactedBy: string;
+  }[];
+
+  // Decision
+  tenantResponse?: 'Interested' | 'Declined' | 'Negotiating';
+  ownerApproval?: boolean;
+  finalRentAmount?: number;
+  newLeaseStartDate?: string;
+  newLeaseEndDate?: string;
+
+  notes: string;
+}
+
+// ============================================================================
+// MOVE-IN / MOVE-OUT TYPES
+// ============================================================================
+
+export interface MoveInInspection {
+  id: string;
+  tenantId: string;
+  propertyId: string;
+  unitNumber: string;
+  inspectionDate: string;
+  inspectedBy: string;
+
+  // Checklist Items
+  checklist: {
+    area: string; // e.g., "Living Room", "Kitchen", "Bathroom"
+    item: string; // e.g., "Walls", "Floor", "Appliances"
+    condition: 'Excellent' | 'Good' | 'Fair' | 'Poor' | 'Damaged';
+    notes: string;
+  }[];
+
+  // Photos
+  photos: {
+    area: string;
+    url: string; // Base64 or file path
+    description: string;
+  }[];
+
+  // Baseline Inventory
+  inventory: {
+    item: string;
+    quantity: number;
+    condition: string;
+  }[];
+
+  // Deposit Confirmation
+  securityDepositAmount: number;
+  securityDepositReceived: boolean;
+
+  // Signatures
+  tenantSignature?: string;
+  managerSignature?: string;
+  signedDate?: string;
+}
+
+export interface MoveOutInspection {
+  id: string;
+  tenantId: string;
+  propertyId: string;
+  unitNumber: string;
+  moveOutDate: string;
+  inspectionDate: string;
+  inspectedBy: string;
+
+  // Exit Checklist
+  checklist: {
+    area: string;
+    item: string;
+    condition: 'Excellent' | 'Good' | 'Fair' | 'Poor' | 'Damaged';
+    damageAssessment?: string;
+    repairRequired: boolean;
+    estimatedRepairCost?: number;
+  }[];
+
+  // Photos
+  photos: {
+    area: string;
+    url: string;
+    description: string;
+  }[];
+
+  // Deposit Calculation
+  securityDepositHeld: number;
+  deductions: {
+    description: string;
+    amount: number;
+    category: 'Cleaning' | 'Repairs' | 'Unpaid Rent' | 'Other';
+  }[];
+  totalDeductions: number;
+  depositRefundAmount: number;
+
+  // Outstanding Charges
+  unpaidRent: number;
+  unpaidUtilities: number;
+  otherCharges: number;
+
+  // Refund Details
+  refundMethod?: 'Bank Transfer' | 'Check' | 'Mobile Money';
+  refundDate?: string;
+  refundReference?: string;
+
+  notes: string;
+}
+
+// ============================================================================
+// OWNER STATEMENTS TYPES
+// ============================================================================
+
+export interface OwnerStatement {
+  id: string;
+  ownerId: string;
+  propertyId: string;
+  statementPeriod: string; // YYYY-MM
+  generatedDate: string;
+  generatedBy: string;
+
+  // Rent Roll
+  rentRoll: {
+    unitNumber: string;
+    tenantName: string;
+    rentAmount: number;
+    amountReceived: number;
+    status: 'Paid' | 'Partial' | 'Unpaid';
+  }[];
+  totalRentDue: number;
+  totalRentReceived: number;
+  collectionRate: number; // percentage
+
+  // Expenses
+  expenses: {
+    date: string;
+    category: string;
+    description: string;
+    amount: number;
+    relatedMaintenanceId?: string;
+  }[];
+  totalExpenses: number;
+
+  // Maintenance Summary
+  maintenanceSummary: {
+    requestId: string;
+    date: string;
+    description: string;
+    vendor: string;
+    cost: number;
+  }[];
+  totalMaintenanceCost: number;
+
+  // Management Fees
+  managementFeeRate: number; // percentage
+  managementFeeAmount: number;
+
+  // Variance Analysis
+  previousMonthNetIncome?: number;
+  currentMonthNetIncome: number;
+  varianceAmount: number;
+  variancePercentage: number;
+
+  // Net Owner Disbursement
+  grossIncome: number;
+  totalDeductions: number;
+  netDisbursement: number;
+
+  // Commentary
+  managerCommentary?: string;
+
+  // PDF Export
+  pdfUrl?: string;
+}
+
+// ============================================================================
+// 80/20 ANALYTICS TYPES
+// ============================================================================
+
+export interface TenantPerformanceMetrics {
+  tenantId: string;
+  tenantName: string;
+
+  // Financial Contribution
+  totalRentPaid: number;
+  onTimePaymentRate: number; // percentage
+  averageDaysLate: number;
+
+  // Risk Metrics
+  maintenanceRequestCount: number;
+  complaintCount: number;
+  leaseViolationCount: number;
+  evictionRisk: 'Low' | 'Medium' | 'High';
+
+  // Profitability
+  totalRevenue: number;
+  totalCosts: number; // maintenance, complaints, etc.
+  netContribution: number;
+
+  // Ranking
+  revenueRank?: number; // 1 = highest
+  profitabilityRank?: number;
+  riskScore: number; // 0-100, higher = more risk
+}
+
+export interface PropertyPerformanceMetrics {
+  propertyId: string;
+  propertyName: string;
+
+  // Income Metrics
+  totalIncome: number;
+  occupancyRate: number;
+  averageRentPerUnit: number;
+
+  // Expense Metrics
+  totalExpenses: number;
+  maintenanceFrequency: number; // requests per month
+  averageMaintenanceCost: number;
+
+  // Profitability
+  noi: number; // Net Operating Income
+  oer: number; // Operating Expense Ratio
+  netYield: number; // percentage
+
+  // Rankings
+  incomeRank?: number;
+  yieldRank?: number;
+  efficiencyRank?: number; // based on OER
+}
+
+export interface VitalFewKPI extends KPI {
+  isVitalFew: boolean; // Mark as one of the critical 5
+  impactScore: number; // 1-10, how critical is this KPI
+  reviewFrequency: 'Daily' | 'Weekly';
+  alertThreshold: number; // Trigger alert if below this percentage of target
+}
+
+// ============================================================================
 // MESSAGING TYPES
 // ============================================================================
 
@@ -264,4 +574,11 @@ export interface AppData {
   chartOfAccounts: Account[];
   generalLedger: GeneralLedgerEntry[];
   cashflowForecast: CashflowForecast;
+
+  // New modules
+  tenantScreeningApplications: TenantScreeningApplication[];
+  leaseRenewals: LeaseRenewal[];
+  moveInInspections: MoveInInspection[];
+  moveOutInspections: MoveOutInspection[];
+  ownerStatements: OwnerStatement[];
 }
