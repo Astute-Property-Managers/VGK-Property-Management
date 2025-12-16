@@ -17,12 +17,17 @@ export const DashboardLayout: React.FC = () => {
       '/huddles': 'Daily & Weekly Huddles',
       '/properties': 'Property Portfolio',
       '/tenants': 'Tenant Management',
+      '/tenant-screening': 'Tenant Screening',
+      '/lease-renewals': 'Lease Renewals',
+      '/move-in-move-out': 'Move-In / Move-Out',
       '/maintenance': 'Maintenance Requests',
       '/vendors': 'Vendor Management',
       '/cashflow': 'Cashflow Forecasting',
       '/chart-of-accounts': 'Chart of Accounts',
       '/ledger': 'Transaction Ledger',
       '/financial-overview': 'Financial Overview',
+      '/owner-statements': 'Owner Statements',
+      '/analytics-8020': '80/20 Analytics',
     };
 
     return titles[path] || 'Verne-Grisworld-Koch';

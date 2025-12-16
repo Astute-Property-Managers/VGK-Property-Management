@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { MoveInInspection, MoveOutInspection, Tenant, Property } from '../types';
-import { securityService } from '../services/securityService';
+import { sanitizeHtml } from '../services/securityService';
 
 /**
  * MOVE-IN / MOVE-OUT MANAGEMENT
@@ -133,7 +133,7 @@ export function MoveInMoveOutView() {
         propertyId: formData.propertyId,
         unitNumber: formData.unitNumber || '',
         inspectionDate: new Date().toISOString().split('T')[0],
-        inspectedBy: securityService.sanitizeInput(formData.inspectedBy),
+        inspectedBy: sanitizeHtml(formData.inspectedBy),
         checklist: formData.checklist,
         photos: formData.photos,
         inventory: formData.inventory,
@@ -153,7 +153,7 @@ export function MoveInMoveOutView() {
         unitNumber: formData.unitNumber || '',
         moveOutDate: formData.moveOutDate || new Date().toISOString().split('T')[0],
         inspectionDate: new Date().toISOString().split('T')[0],
-        inspectedBy: securityService.sanitizeInput(formData.inspectedBy),
+        inspectedBy: sanitizeHtml(formData.inspectedBy),
         checklist: formData.checklist,
         photos: formData.photos,
         securityDepositHeld: formData.securityDepositAmount || 0,
@@ -163,7 +163,7 @@ export function MoveInMoveOutView() {
         unpaidRent: formData.unpaidRent || 0,
         unpaidUtilities: formData.unpaidUtilities || 0,
         otherCharges: formData.otherCharges || 0,
-        notes: securityService.sanitizeInput(formData.notes || ''),
+        notes: sanitizeHtml(formData.notes || ''),
       };
 
       saveData(moveInInspections, [...moveOutInspections, newInspection]);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { OwnerStatement, Property, Tenant, MaintenanceRequest, GeneralLedgerEntry, Vendor } from '../types';
-import { securityService } from '../services/securityService';
+import { sanitizeHtml } from '../services/securityService';
 
 /**
  * OWNER STATEMENTS MODULE
@@ -24,7 +24,6 @@ export function OwnerStatementsView() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedStatement, setSelectedStatement] = useState<OwnerStatement | null>(null);
-  const [generatingFor, setGeneratingFor] = useState<{ propertyId: string; period: string } | null>(null);
 
   useEffect(() => {
     loadData();
@@ -54,10 +53,8 @@ export function OwnerStatementsView() {
   }
 
   function handleGenerateStatement(propertyId: string, period: string) {
-    setGeneratingFor({ propertyId, period });
     const statement = generateStatement(propertyId, period);
     saveStatements([...statements, statement]);
-    setGeneratingFor(null);
     alert('Statement generated successfully!');
   }
 
@@ -69,13 +66,29 @@ export function OwnerStatementsView() {
     const propertyTenants = tenants.filter(t => t.propertyId === propertyId);
 
     // Build Rent Roll
-    const rentRoll = propertyTenants.map(tenant => ({
-      unitNumber: tenant.unitNumber,
-      tenantName: tenant.name,
-      rentAmount: tenant.rentAmount,
-      amountReceived: tenant.paymentStatus === 'Paid' ? tenant.rentAmount : tenant.paymentStatus === 'Overdue' ? 0 : tenant.rentAmount * 0.5,
-      status: tenant.paymentStatus,
-    }));
+    const rentRoll = propertyTenants.map(tenant => {
+      let amountReceived = 0;
+      let status: 'Paid' | 'Partial' | 'Unpaid' = 'Unpaid';
+
+      if (tenant.paymentStatus === 'Paid') {
+        amountReceived = tenant.rentAmount;
+        status = 'Paid';
+      } else if (tenant.paymentStatus === 'Due') {
+        amountReceived = tenant.rentAmount * 0.5;
+        status = 'Partial';
+      } else {
+        amountReceived = 0;
+        status = 'Unpaid';
+      }
+
+      return {
+        unitNumber: tenant.unitNumber,
+        tenantName: tenant.name,
+        rentAmount: tenant.rentAmount,
+        amountReceived,
+        status,
+      };
+    });
 
     const totalRentDue = rentRoll.reduce((sum, r) => sum + r.rentAmount, 0);
     const totalRentReceived = rentRoll.reduce((sum, r) => sum + r.amountReceived, 0);
@@ -188,7 +201,7 @@ export function OwnerStatementsView() {
   function handleUpdateCommentary(commentary: string) {
     if (!selectedStatement) return;
     const updated = statements.map(s =>
-      s.id === selectedStatement.id ? { ...s, managerCommentary: securityService.sanitizeInput(commentary) } : s
+      s.id === selectedStatement.id ? { ...s, managerCommentary: sanitizeHtml(commentary) } : s
     );
     saveStatements(updated);
     setSelectedStatement({ ...selectedStatement, managerCommentary: commentary });
@@ -430,7 +443,7 @@ export function OwnerStatementsView() {
                               className={`px-2 py-1 text-xs font-semibold rounded-full ${
                                 entry.status === 'Paid'
                                   ? 'bg-green-100 text-green-800'
-                                  : entry.status === 'Overdue'
+                                  : entry.status === 'Unpaid'
                                   ? 'bg-red-100 text-red-800'
                                   : 'bg-yellow-100 text-yellow-800'
                               }`}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { TenantScreeningApplication, Property, ScreeningStatus } from '../types';
-import { securityService } from '../services/securityService';
+import { sanitizeHtml } from '../services/securityService';
 
 /**
  * TENANT SCREENING MODULE
@@ -90,13 +90,13 @@ export function TenantScreeningView() {
       return;
     }
 
-    const sanitized = securityService.sanitizeInput(formData.applicantName);
+    const sanitized = sanitizeHtml(formData.applicantName);
 
     const newApp: TenantScreeningApplication = {
       id: `screen-${Date.now()}`,
       applicantName: sanitized,
-      email: securityService.sanitizeInput(formData.email || ''),
-      phone: securityService.sanitizeInput(formData.phone || ''),
+      email: sanitizeHtml(formData.email || ''),
+      phone: sanitizeHtml(formData.phone || ''),
       propertyId: formData.propertyId || '',
       unitNumber: formData.unitNumber || '',
       applicationDate: new Date().toISOString().split('T')[0],
@@ -105,13 +105,13 @@ export function TenantScreeningView() {
       rentalHistoryVerified: formData.rentalHistoryVerified || false,
       evictionHistory: formData.evictionHistory || false,
       references: formData.references || [],
-      reviewNotes: securityService.sanitizeInput(formData.reviewNotes || ''),
-      currentEmployer: securityService.sanitizeInput(formData.currentEmployer || ''),
-      jobTitle: securityService.sanitizeInput(formData.jobTitle || ''),
+      reviewNotes: sanitizeHtml(formData.reviewNotes || ''),
+      currentEmployer: sanitizeHtml(formData.currentEmployer || ''),
+      jobTitle: sanitizeHtml(formData.jobTitle || ''),
       monthlyIncome: formData.monthlyIncome || 0,
       creditScore: formData.creditScore || 0,
-      previousLandlord: securityService.sanitizeInput(formData.previousLandlord || ''),
-      previousLandlordContact: securityService.sanitizeInput(formData.previousLandlordContact || ''),
+      previousLandlord: sanitizeHtml(formData.previousLandlord || ''),
+      previousLandlordContact: sanitizeHtml(formData.previousLandlordContact || ''),
     };
 
     saveApplications([...applications, newApp]);
@@ -127,7 +127,7 @@ export function TenantScreeningView() {
             ...app,
             ...formData,
             reviewDate: new Date().toISOString().split('T')[0],
-            reviewNotes: securityService.sanitizeInput(formData.reviewNotes || ''),
+            reviewNotes: sanitizeHtml(formData.reviewNotes || ''),
           }
         : app
     );

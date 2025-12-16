@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { LeaseRenewal, Tenant, Property, LeaseRenewalStatus } from '../types';
-import { securityService } from '../services/securityService';
+import { sanitizeHtml } from '../services/securityService';
 
 /**
  * LEASE RENEWAL WORKFLOW
@@ -129,11 +129,6 @@ export function LeaseRenewalView() {
     saveRenewals(updated);
   }
 
-  function handleUpdateStatus(renewalId: string, newStatus: LeaseRenewalStatus) {
-    const updated = renewals.map(r => (r.id === renewalId ? { ...r, renewalStatus: newStatus } : r));
-    saveRenewals(updated);
-  }
-
   function handleAddCommunication() {
     if (!selectedRenewal || !communicationForm.summary) return;
 
@@ -146,8 +141,8 @@ export function LeaseRenewalView() {
               {
                 date: new Date().toISOString().split('T')[0],
                 type: communicationForm.type as 'Email' | 'Call' | 'In-Person' | 'SMS',
-                summary: securityService.sanitizeInput(communicationForm.summary),
-                contactedBy: securityService.sanitizeInput(communicationForm.contactedBy || 'Manager'),
+                summary: sanitizeHtml(communicationForm.summary),
+                contactedBy: sanitizeHtml(communicationForm.contactedBy || 'Manager'),
               },
             ],
           }
