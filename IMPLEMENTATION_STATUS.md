@@ -1,29 +1,19 @@
 # Altus - Enterprise Transformation Status
 
-## ✅ Implemented in this repository
-- Browser-first enterprise frontend baseline with runtime guardrails and error boundary
-- Backend API service with:
-  - Authentication (signed bearer token)
-  - Role-based authorization
-  - Entity CRUD endpoints
-  - Archive/restore lifecycle controls
-  - Hard delete (admin-restricted)
-- SQLite operational data layer with WAL mode
-- Audit infrastructure capturing auth and record lifecycle events
-- Environment-driven configuration for frontend + backend
+## ✅ Implemented
+- Backend API + SQLite database for operational persistence
+- RBAC with auth login and token verification
+- Token revocation path (`logout` -> `revoked_tokens`)
+- Login throttling controls to reduce brute-force risk
+- Strict CORS behavior for production origin enforcement
+- Audit logs for auth, record lifecycle, and state operations
+- Full lifecycle operations: create, read, edit, archive, restore, delete
+- Frontend production cutover: local-only storage disabled in production, API state storage enforced
+- DB Browser compatibility via SQLite file (`backend/altus.db`)
 
-## Capabilities now covered
-- **Create** records
-- **Read** records (active or include archived)
-- **Edit/Update** records
-- **Archive** records
-- **Restore** archived records
-- **Delete** records (admin only)
-- **Audit** who did what and when
-
-## Remaining enterprise enhancements (next phase)
-- MFA and stronger credential governance
-- Managed DB migration and HA topology
-- SIEM integration for tamper-resistant centralized logs
-- Automated backup verification and DR simulations
-- Full integration of frontend screens to backend endpoints
+## Remaining enterprise-grade work (recommended)
+- Replace sync browser state calls with async API client pattern in all views
+- Add MFA and refresh token/session governance
+- Add SIEM shipping and immutable external log retention
+- Move to managed PostgreSQL HA topology for mission-critical scale
+- Add automated backup validation and DR exercises

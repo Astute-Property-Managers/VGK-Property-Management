@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 const TOKEN_TTL_SECONDS = Number(process.env.ALTUS_TOKEN_TTL_SECONDS || 60 * 60 * 8);
 const JWT_SECRET = process.env.ALTUS_JWT_SECRET || 'change-this-in-production';
 const b64 = (i) => Buffer.from(i).toString('base64url');
@@ -14,7 +15,7 @@ export function verifyPassword(password, salt, expectedHash) {
 export function issueToken(user) {
   const header = b64(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const now = Math.floor(Date.now() / 1000);
-  const payload = b64(JSON.stringify({ sub: user.id, username: user.username, role: user.role, iat: now, exp: now + TOKEN_TTL_SECONDS }));
+  const payload = b64(JSON.stringify({ sub: user.id, username: user.username, role: user.role, jti: randomUUID(), iat: now, exp: now + TOKEN_TTL_SECONDS }));
   const sig = crypto.createHmac('sha256', JWT_SECRET).update(`${header}.${payload}`).digest('base64url');
   return `${header}.${payload}.${sig}`;
 }

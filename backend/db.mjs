@@ -26,6 +26,19 @@ export function initDatabase() {
       action TEXT NOT NULL, entity_type TEXT NOT NULL, entity_id TEXT, metadata_json TEXT, created_at TEXT NOT NULL
     );
     CREATE INDEX IF NOT EXISTS idx_audit_created_at ON audit_logs(created_at);
+
+    CREATE TABLE IF NOT EXISTS revoked_tokens (
+      jti TEXT PRIMARY KEY,
+      revoked_at TEXT NOT NULL,
+      reason TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS kv_state (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      updated_by TEXT NOT NULL
+    );
   `);
   seedAdmin();
 }
@@ -76,4 +89,25 @@ export function listAuditLogs({ limit = 200, entityType, entityId }) {
   if (entityId) { sql += ' AND entity_id = ?'; params.push(entityId); }
   sql += ' ORDER BY created_at DESC LIMIT ?'; params.push(limit);
   return db.prepare(sql).all(...params).map((l) => ({ ...l, metadata: JSON.parse(l.metadata_json || '{}') }));
+}
+
+
+export function revokeTokenJti(jti, reason = 'logout') {
+  db.prepare('INSERT OR REPLACE INTO revoked_tokens (jti, revoked_at, reason) VALUES (?, ?, ?)').run(jti, nowIso(), reason);
+}
+export function isTokenRevoked(jti) {
+  if (!jti) return false;
+  const r = db.prepare('SELECT jti FROM revoked_tokens WHERE jti = ?').get(jti);
+  return !!r;
+}
+export function getState(key) {
+  const r = db.prepare('SELECT value FROM kv_state WHERE key = ?').get(key);
+  return r ? r.value : null;
+}
+export function setState({ key, value, actorUserId }) {
+  db.prepare('INSERT INTO kv_state (key, value, updated_at, updated_by) VALUES (?, ?, ?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at, updated_by=excluded.updated_by')
+    .run(key, value, nowIso(), actorUserId);
+}
+export function deleteState(key) {
+  return db.prepare('DELETE FROM kv_state WHERE key = ?').run(key).changes > 0;
 }

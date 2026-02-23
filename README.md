@@ -3,21 +3,36 @@
 ## Tagline
 **Elevate your Estate**
 
-## What this now includes
-Altus now ships with a browser frontend **and** a production-oriented backend foundation:
-- Secure backend API (`backend/server.mjs`)
-- SQLite operational database (`backend/altus.db` by default)
-- Authentication with signed bearer tokens
-- Role-based access control (admin/manager/operator/auditor)
-- Full record lifecycle support: **create, read, update, archive, restore, delete**
-- Immutable audit trail for login and record actions
+## Production cutover status
+Altus now includes a browser frontend wired for production state persistence through backend APIs,
+with local-only persistence disabled in production mode.
 
-## Architecture
-- **Frontend:** React + TypeScript + Vite
-- **Backend:** Node.js HTTP API (no external runtime dependency), JSON REST endpoints
-- **Database:** SQLite (`node:sqlite`), WAL mode enabled
+## Backend + database capabilities
+- Authenticated API (`backend/server.mjs`)
+- RBAC (`admin`, `manager`, `operator`, `auditor`)
+- CRUD + archive + restore + delete lifecycle controls
+- Audit logs for auth and record/state actions
+- Login throttling controls
+- Token revocation (`POST /api/auth/logout`)
+- Strict CORS enforcement in production
+- SQLite operational database (`backend/altus.db`)
 
-## Local startup
+## DB Browser for SQLite connectivity
+Your DB Browser can open the backend database file directly:
+- File path: `backend/altus.db`
+- Ensure API is stopped before long read/write schema operations from DB Browser.
+- Relevant tables:
+  - `users`
+  - `records`
+  - `audit_logs`
+  - `kv_state`
+  - `revoked_tokens`
+
+## Frontend production storage cutover
+- In `development`: frontend uses browser localStorage.
+- In `production`: frontend uses backend state API endpoints (`/api/state/:key`) and requires `VITE_API_ACCESS_TOKEN`.
+
+## Run locally
 ```bash
 npm install
 cp .env.example .env
@@ -25,41 +40,19 @@ npm run api:start
 npm run dev
 ```
 
-Frontend runs at `http://localhost:3000`, API runs at `http://localhost:8787`.
-
-## API security and roles
-- `POST /api/auth/login` returns bearer token
-- Roles:
-  - `admin`: full access including hard delete and audit access
-  - `manager`: create/edit/archive/restore
-  - `operator`: create/edit
-  - `auditor`: read + audit logs
+## Required production configuration
+- `VITE_APP_MODE=production`
+- `VITE_API_BASE_URL=https://your-api.example.com/api`
+- `VITE_API_ACCESS_TOKEN=<service access token>`
+- `ALTUS_JWT_SECRET=<strong secret>`
+- `ALTUS_ALLOWED_ORIGIN=https://your-frontend.example.com`
+- `ALTUS_ADMIN_PASSWORD=<strong bootstrap password>`
 
 ## Core API endpoints
-- Health: `GET /api/health`
-- Login: `POST /api/auth/login`
-- Audit: `GET /api/audit?limit=200&entityType=properties&entityId=<id>`
-- Generic entity CRUD:
-  - `GET /api/:entityType`
-  - `GET /api/:entityType/:id`
-  - `POST /api/:entityType`
-  - `PUT /api/:entityType/:id`
-  - `POST /api/:entityType/:id/archive`
-  - `POST /api/:entityType/:id/restore`
-  - `DELETE /api/:entityType/:id`
-
-Supported entities include properties, tenants, maintenance, vendors, rocks, kpis,
-critical-numbers, huddles, transactions, and owner-statements.
-
-## Production hardening checklist
-Before internet-facing go-live for sensitive financial/property operations:
-- Replace default admin password and JWT secret from `.env`
-- Put API behind TLS reverse proxy and WAF
-- Move DB to managed PostgreSQL for HA/replication (recommended)
-- Configure backup/restore policies and DR drills
-- Stream audit logs to centralized SIEM
-- Add MFA and password rotation policies
-- Run SAST/DAST/pentest and patch SLAs
-
-## Notes on persistence migration
-Frontend still contains browser storage for legacy compatibility. Production should point frontend to backend APIs (`VITE_API_BASE_URL`) and progressively disable local-only persistence in operational environments.
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/audit`
+- `GET|POST|PUT|DELETE /api/:entityType[/:id]`
+- `POST /api/:entityType/:id/archive`
+- `POST /api/:entityType/:id/restore`
+- `GET|PUT|DELETE /api/state/:key`

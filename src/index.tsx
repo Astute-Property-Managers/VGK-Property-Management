@@ -4,10 +4,11 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { assertEnterpriseRuntimeConfiguration } from './services/runtimeConfig';
+import { assertEnterpriseRuntimeConfiguration, requireApiTokenInProduction } from './services/runtimeConfig';
 import { logEvent } from './services/observabilityService';
 
 assertEnterpriseRuntimeConfiguration();
+requireApiTokenInProduction();
 
 logEvent({ level: 'info', message: 'Application bootstrap started' });
 
