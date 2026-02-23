@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { LeaseRenewal, Tenant, Property, LeaseRenewalStatus } from '../types';
 import { sanitizeHtml } from '../services/securityService';
+import { storageGetItem, storageSetItem } from '../services/storageService';
 
 /**
  * LEASE RENEWAL WORKFLOW
@@ -28,7 +29,7 @@ export function LeaseRenewalView() {
   }, []);
 
   function loadData() {
-    const stored = localStorage.getItem('vgk_data');
+    const stored = storageGetItem('vgk_data');
     if (stored) {
       const data = JSON.parse(stored);
       setRenewals(data.leaseRenewals || []);
@@ -38,17 +39,17 @@ export function LeaseRenewalView() {
   }
 
   function saveRenewals(rens: LeaseRenewal[]) {
-    const stored = localStorage.getItem('vgk_data');
+    const stored = storageGetItem('vgk_data');
     if (stored) {
       const data = JSON.parse(stored);
       data.leaseRenewals = rens;
-      localStorage.setItem('vgk_data', JSON.stringify(data));
+      storageSetItem('vgk_data', JSON.stringify(data));
       setRenewals(rens);
     }
   }
 
   function detectUpcomingRenewals() {
-    const stored = localStorage.getItem('vgk_data');
+    const stored = storageGetItem('vgk_data');
     if (!stored) return;
 
     const data = JSON.parse(stored);
@@ -80,7 +81,7 @@ export function LeaseRenewalView() {
 
       const updated = [...existingRenewals, ...newRenewals];
       data.leaseRenewals = updated;
-      localStorage.setItem('vgk_data', JSON.stringify(data));
+      storageSetItem('vgk_data', JSON.stringify(data));
       setRenewals(updated);
     }
   }

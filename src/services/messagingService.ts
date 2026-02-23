@@ -1,13 +1,14 @@
 /**
  * Messaging Service - SMS & WhatsApp Integration
- * Handles tenant communication for VGK Property Command
+ * Handles tenant communication for Altus
  */
 
 // TODO: Replace with your actual SMS/WhatsApp API key
 // For production, use environment variables
-const MESSAGING_API_KEY = 'YOUR_API_KEY_HERE';
-const SMS_API_ENDPOINT = '/api/send-sms'; // Replace with actual endpoint
-const WHATSAPP_API_ENDPOINT = '/api/send-whatsapp'; // Replace with actual endpoint
+const MESSAGING_API_KEY = import.meta.env.VITE_MESSAGING_API_KEY || '';
+const SMS_API_ENDPOINT = import.meta.env.VITE_SMS_API_ENDPOINT || '/api/send-sms';
+const WHATSAPP_API_ENDPOINT = import.meta.env.VITE_WHATSAPP_API_ENDPOINT || '/api/send-whatsapp';
+const IS_PRODUCTION = import.meta.env.VITE_APP_MODE === 'production';
 
 export interface SMSPayload {
   to: string | string[];
@@ -67,9 +68,9 @@ export async function sendSms(to: string | string[], message: string): Promise<b
   } catch (error) {
     console.error('Failed to send SMS:', error);
 
-    // In demo mode, simulate success after logging
-    if (MESSAGING_API_KEY === 'YOUR_API_KEY_HERE') {
-      console.warn('📱 Demo Mode: SMS simulation successful');
+    // In development mode, simulate success after logging
+    if (!MESSAGING_API_KEY && !IS_PRODUCTION) {
+      console.warn('📱 Development Mode: SMS simulation successful');
       return true;
     }
 
@@ -125,9 +126,9 @@ export async function sendWhatsAppMessage(to: string | string[], message: string
   } catch (error) {
     console.error('Failed to send WhatsApp message:', error);
 
-    // In demo mode, simulate success after logging
-    if (MESSAGING_API_KEY === 'YOUR_API_KEY_HERE') {
-      console.warn('💬 Demo Mode: WhatsApp simulation successful');
+    // In development mode, simulate success after logging
+    if (!MESSAGING_API_KEY && !IS_PRODUCTION) {
+      console.warn('💬 Development Mode: WhatsApp simulation successful');
       return true;
     }
 
@@ -162,7 +163,7 @@ export function generateRentReminderMessage(
     day: 'numeric',
   });
 
-  return `Dear ${tenantName},\n\nThis is a friendly reminder that your rent payment of ${formatUGX(rentAmount)} is due on ${formattedDate}.\n\nPlease ensure timely payment to avoid late fees. For payment options or queries, contact our office.\n\nThank you for being a valued tenant.\n\n- VGK Property Management`;
+  return `Dear ${tenantName},\n\nThis is a friendly reminder that your rent payment of ${formatUGX(rentAmount)} is due on ${formattedDate}.\n\nPlease ensure timely payment to avoid late fees. For payment options or queries, contact our office.\n\nThank you for being a valued tenant.\n\n- Altus Property Management`;
 }
 
 /**
@@ -177,7 +178,7 @@ export function generatePaymentConfirmationMessage(
   amount: number,
   referenceNumber: string
 ): string {
-  return `Dear ${tenantName},\n\nWe confirm receipt of your payment of ${formatUGX(amount)}.\n\nReference: ${referenceNumber}\nDate: ${new Date().toLocaleDateString('en-UG')}\n\nThank you for your prompt payment.\n\n- VGK Property Management`;
+  return `Dear ${tenantName},\n\nWe confirm receipt of your payment of ${formatUGX(amount)}.\n\nReference: ${referenceNumber}\nDate: ${new Date().toLocaleDateString('en-UG')}\n\nThank you for your prompt payment.\n\n- Altus Property Management`;
 }
 
 /**

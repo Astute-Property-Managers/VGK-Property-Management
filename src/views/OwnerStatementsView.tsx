@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { OwnerStatement, Property, Tenant, MaintenanceRequest, GeneralLedgerEntry, Vendor } from '../types';
 import { sanitizeHtml } from '../services/securityService';
+import { storageGetItem, storageSetItem } from '../services/storageService';
 
 /**
  * OWNER STATEMENTS MODULE
@@ -30,7 +31,7 @@ export function OwnerStatementsView() {
   }, []);
 
   function loadData() {
-    const stored = localStorage.getItem('vgk_data');
+    const stored = storageGetItem('vgk_data');
     if (stored) {
       const data = JSON.parse(stored);
       setStatements(data.ownerStatements || []);
@@ -43,11 +44,11 @@ export function OwnerStatementsView() {
   }
 
   function saveStatements(stmts: OwnerStatement[]) {
-    const stored = localStorage.getItem('vgk_data');
+    const stored = storageGetItem('vgk_data');
     if (stored) {
       const data = JSON.parse(stored);
       data.ownerStatements = stmts;
-      localStorage.setItem('vgk_data', JSON.stringify(data));
+      storageSetItem('vgk_data', JSON.stringify(data));
       setStatements(stmts);
     }
   }

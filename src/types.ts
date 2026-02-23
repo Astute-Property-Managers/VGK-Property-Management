@@ -1,5 +1,5 @@
 /**
- * Verne-Grisworld-Koch Property Command - Type Definitions
+ * Altus - Type Definitions
  * Comprehensive types for Scaling Up + Property Management + IFRS Compliance
  */
 
