@@ -1,6 +1,6 @@
 /**
  * Security Service - XSS Prevention & Input Sanitization
- * Implements core secure coding principles for VGK Property Command
+ * Implements core secure coding principles for Altus
  */
 
 /**
@@ -83,13 +83,13 @@ export function isValidDate(date: string): boolean {
 }
 
 /**
- * Security notice for localStorage usage
+ * Security notice for desktop SQLite/local storage usage
  */
 export const SECURITY_NOTICE = `
-⚠️ SECURITY NOTICE: This application uses localStorage for demonstration purposes.
+⚠️ SECURITY NOTICE: This application uses SQLite storage in desktop mode with localStorage as browser fallback.
 For production use with sensitive financial data:
-1. Implement a secure backend with proper authentication
-2. Use HTTPS for all communications
+1. Implement user authentication and authorization
+2. Use signed desktop updates and encrypted API communications
 3. Encrypt sensitive data at rest and in transit
 4. Implement proper access controls and audit logging
 5. Comply with Uganda Data Protection and Privacy Act

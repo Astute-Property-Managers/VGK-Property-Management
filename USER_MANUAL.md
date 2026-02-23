@@ -1,4 +1,4 @@
-# VGK Property Command - User Manual
+# Altus - User Manual
 
 **Version 1.0**
 **Property Management System for Uganda**
@@ -22,9 +22,9 @@
 
 ## Introduction
 
-### About VGK Property Command
+### About Altus
 
-VGK Property Command is a comprehensive property management system designed specifically for Ugandan property managers. It combines:
+Altus is a comprehensive property management system designed specifically for Ugandan property managers. It combines:
 
 - **Verne Harnish's Scaling Up** methodology for strategic execution
 - **Robert Griswold's** property management best practices

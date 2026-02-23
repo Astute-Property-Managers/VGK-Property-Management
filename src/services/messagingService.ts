@@ -1,6 +1,6 @@
 /**
  * Messaging Service - SMS & WhatsApp Integration
- * Handles tenant communication for VGK Property Command
+ * Handles tenant communication for Altus
  */
 
 // TODO: Replace with your actual SMS/WhatsApp API key
@@ -162,7 +162,7 @@ export function generateRentReminderMessage(
     day: 'numeric',
   });
 
-  return `Dear ${tenantName},\n\nThis is a friendly reminder that your rent payment of ${formatUGX(rentAmount)} is due on ${formattedDate}.\n\nPlease ensure timely payment to avoid late fees. For payment options or queries, contact our office.\n\nThank you for being a valued tenant.\n\n- VGK Property Management`;
+  return `Dear ${tenantName},\n\nThis is a friendly reminder that your rent payment of ${formatUGX(rentAmount)} is due on ${formattedDate}.\n\nPlease ensure timely payment to avoid late fees. For payment options or queries, contact our office.\n\nThank you for being a valued tenant.\n\n- Altus Property Management`;
 }
 
 /**
@@ -177,7 +177,7 @@ export function generatePaymentConfirmationMessage(
   amount: number,
   referenceNumber: string
 ): string {
-  return `Dear ${tenantName},\n\nWe confirm receipt of your payment of ${formatUGX(amount)}.\n\nReference: ${referenceNumber}\nDate: ${new Date().toLocaleDateString('en-UG')}\n\nThank you for your prompt payment.\n\n- VGK Property Management`;
+  return `Dear ${tenantName},\n\nWe confirm receipt of your payment of ${formatUGX(amount)}.\n\nReference: ${referenceNumber}\nDate: ${new Date().toLocaleDateString('en-UG')}\n\nThank you for your prompt payment.\n\n- Altus Property Management`;
 }
 
 /**

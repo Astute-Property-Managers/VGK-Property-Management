@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { MoveInInspection, MoveOutInspection, Tenant, Property } from '../types';
 import { sanitizeHtml } from '../services/securityService';
+import { storageGetItem, storageSetItem } from '../services/storageService';
 
 /**
  * MOVE-IN / MOVE-OUT MANAGEMENT
@@ -41,7 +42,7 @@ export function MoveInMoveOutView() {
   }, []);
 
   function loadData() {
-    const stored = localStorage.getItem('vgk_data');
+    const stored = storageGetItem('vgk_data');
     if (stored) {
       const data = JSON.parse(stored);
       setMoveInInspections(data.moveInInspections || []);
@@ -52,12 +53,12 @@ export function MoveInMoveOutView() {
   }
 
   function saveData(moveIns: MoveInInspection[], moveOuts: MoveOutInspection[]) {
-    const stored = localStorage.getItem('vgk_data');
+    const stored = storageGetItem('vgk_data');
     if (stored) {
       const data = JSON.parse(stored);
       data.moveInInspections = moveIns;
       data.moveOutInspections = moveOuts;
-      localStorage.setItem('vgk_data', JSON.stringify(data));
+      storageSetItem('vgk_data', JSON.stringify(data));
       setMoveInInspections(moveIns);
       setMoveOutInspections(moveOuts);
     }

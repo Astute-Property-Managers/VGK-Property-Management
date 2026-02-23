@@ -1,7 +1,7 @@
 {
-  "name": "verne-grisworld-koch",
+  "name": "altus-estate",
   "version": "1.0.0",
-  "description": "VGK Property Command - Scaling Up Scoreboard for Property Management in Uganda",
+  "description": "Altus browser-based property management platform for Uganda",
   "private": true,
   "type": "module",
   "scripts": {
