@@ -19,10 +19,3 @@ export function assertEnterpriseRuntimeConfiguration(): void {
   }
 }
 
-export const API_ACCESS_TOKEN = import.meta.env.VITE_API_ACCESS_TOKEN?.trim() || '';
-
-export function requireApiTokenInProduction(): void {
-  if (APP_MODE === 'production' && !API_ACCESS_TOKEN) {
-    throw new Error('Missing VITE_API_ACCESS_TOKEN for production mode.');
-  }
-}

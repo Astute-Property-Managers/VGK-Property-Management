@@ -3,7 +3,8 @@
  * - development: localStorage (for speed)
  * - production: backend state API (no local-only persistence)
  */
-import { API_BASE_URL, API_ACCESS_TOKEN, APP_MODE } from './runtimeConfig';
+import { API_BASE_URL, APP_MODE } from './runtimeConfig';
+import { getAccessToken } from './sessionService';
 
 const isProduction = APP_MODE === 'production';
 
@@ -16,7 +17,9 @@ function requestSync(method: 'GET' | 'PUT' | 'DELETE', key: string, value?: stri
   const xhr = new XMLHttpRequest();
   xhr.open(method, apiStateUrl(key), false);
   xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.setRequestHeader('Authorization', `Bearer ${API_ACCESS_TOKEN}`);
+  const token = getAccessToken();
+  if (!token) throw new Error('No active API session. Please login.');
+  xhr.setRequestHeader('Authorization', `Bearer ${token}`);
   xhr.send(method === 'PUT' ? JSON.stringify({ value: value ?? '' }) : null);
 
   if (xhr.status >= 200 && xhr.status < 300) {

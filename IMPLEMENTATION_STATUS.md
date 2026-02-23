@@ -8,7 +8,7 @@
 - Strict CORS behavior for production origin enforcement
 - Audit logs for auth, record lifecycle, and state operations
 - Full lifecycle operations: create, read, edit, archive, restore, delete
-- Frontend production cutover: local-only storage disabled in production, API state storage enforced
+- Frontend production cutover: local-only storage disabled in production, API state storage enforced through authenticated user session
 - DB Browser compatibility via SQLite file (`backend/altus.db`)
 
 ## Remaining enterprise-grade work (recommended)

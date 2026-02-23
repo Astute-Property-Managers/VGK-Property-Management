@@ -30,7 +30,7 @@ Your DB Browser can open the backend database file directly:
 
 ## Frontend production storage cutover
 - In `development`: frontend uses browser localStorage.
-- In `production`: frontend uses backend state API endpoints (`/api/state/:key`) and requires `VITE_API_ACCESS_TOKEN`.
+- In `production`: frontend uses backend state API endpoints (`/api/state/:key`) and requires an authenticated user session token from `/api/auth/login`.
 
 ## Run locally
 ```bash
@@ -43,7 +43,6 @@ npm run dev
 ## Required production configuration
 - `VITE_APP_MODE=production`
 - `VITE_API_BASE_URL=https://your-api.example.com/api`
-- `VITE_API_ACCESS_TOKEN=<service access token>`
 - `ALTUS_JWT_SECRET=<strong secret>`
 - `ALTUS_ALLOWED_ORIGIN=https://your-frontend.example.com`
 - `ALTUS_ADMIN_PASSWORD=<strong bootstrap password>`
