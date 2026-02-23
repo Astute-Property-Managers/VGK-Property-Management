@@ -1,6 +1,6 @@
 /**
  * Data Service - Centralized data management for Altus
- * Implements CRUD operations with persistent storage (SQLite on desktop, localStorage in web fallback)
+ * Implements CRUD operations with browser storage adapter (localStorage in current runtime)
  */
 
 import { STORAGE_PREFIX, INITIAL_OPSP, INITIAL_ROCKS, INITIAL_KPIS, INITIAL_CRITICAL_NUMBERS, INITIAL_PROPERTIES, INITIAL_TENANTS, INITIAL_MAINTENANCE_REQUESTS, INITIAL_VENDORS, INITIAL_CHART_OF_ACCOUNTS, INITIAL_GENERAL_LEDGER_ENTRIES, INITIAL_CASHFLOW_FORECAST } from '../constants';

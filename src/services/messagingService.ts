@@ -5,9 +5,10 @@
 
 // TODO: Replace with your actual SMS/WhatsApp API key
 // For production, use environment variables
-const MESSAGING_API_KEY = 'YOUR_API_KEY_HERE';
-const SMS_API_ENDPOINT = '/api/send-sms'; // Replace with actual endpoint
-const WHATSAPP_API_ENDPOINT = '/api/send-whatsapp'; // Replace with actual endpoint
+const MESSAGING_API_KEY = import.meta.env.VITE_MESSAGING_API_KEY || '';
+const SMS_API_ENDPOINT = import.meta.env.VITE_SMS_API_ENDPOINT || '/api/send-sms';
+const WHATSAPP_API_ENDPOINT = import.meta.env.VITE_WHATSAPP_API_ENDPOINT || '/api/send-whatsapp';
+const IS_PRODUCTION = import.meta.env.VITE_APP_MODE === 'production';
 
 export interface SMSPayload {
   to: string | string[];
@@ -67,9 +68,9 @@ export async function sendSms(to: string | string[], message: string): Promise<b
   } catch (error) {
     console.error('Failed to send SMS:', error);
 
-    // In demo mode, simulate success after logging
-    if (MESSAGING_API_KEY === 'YOUR_API_KEY_HERE') {
-      console.warn('📱 Demo Mode: SMS simulation successful');
+    // In development mode, simulate success after logging
+    if (!MESSAGING_API_KEY && !IS_PRODUCTION) {
+      console.warn('📱 Development Mode: SMS simulation successful');
       return true;
     }
 
@@ -125,9 +126,9 @@ export async function sendWhatsAppMessage(to: string | string[], message: string
   } catch (error) {
     console.error('Failed to send WhatsApp message:', error);
 
-    // In demo mode, simulate success after logging
-    if (MESSAGING_API_KEY === 'YOUR_API_KEY_HERE') {
-      console.warn('💬 Demo Mode: WhatsApp simulation successful');
+    // In development mode, simulate success after logging
+    if (!MESSAGING_API_KEY && !IS_PRODUCTION) {
+      console.warn('💬 Development Mode: WhatsApp simulation successful');
       return true;
     }
 
