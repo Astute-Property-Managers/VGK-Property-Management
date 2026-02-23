@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { Tenant, Property, MaintenanceRequest, TenantPerformanceMetrics, PropertyPerformanceMetrics, KPI, GeneralLedgerEntry } from '../types';
+import { storageGetItem, storageSetItem } from '../services/storageService';
 
 /**
  * 80/20 ANALYTICS ENGINE
@@ -43,7 +44,7 @@ export function Analytics8020View() {
   }, [properties, tenants, maintenanceRequests, generalLedger]);
 
   function loadData() {
-    const stored = localStorage.getItem('vgk_data');
+    const stored = storageGetItem('vgk_data');
     if (stored) {
       const data = JSON.parse(stored);
       setTenants(data.tenants || []);
@@ -53,7 +54,7 @@ export function Analytics8020View() {
       setGeneralLedger(data.generalLedger || []);
 
       // Load vital few KPI selections from localStorage
-      const vitalFew = localStorage.getItem('vitalFewKPIs');
+      const vitalFew = storageGetItem('vitalFewKPIs');
       if (vitalFew) {
         setVitalFewKPIs(JSON.parse(vitalFew));
       }
@@ -61,7 +62,7 @@ export function Analytics8020View() {
   }
 
   function saveVitalFewKPIs(kpiIds: string[]) {
-    localStorage.setItem('vitalFewKPIs', JSON.stringify(kpiIds));
+    storageSetItem('vitalFewKPIs', JSON.stringify(kpiIds));
     setVitalFewKPIs(kpiIds);
   }
 

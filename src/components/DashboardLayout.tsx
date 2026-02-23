@@ -30,7 +30,7 @@ export const DashboardLayout: React.FC = () => {
       '/analytics-8020': '80/20 Analytics',
     };
 
-    return titles[path] || 'Verne-Grisworld-Koch';
+    return titles[path] || 'Altus';
   };
 
   return (

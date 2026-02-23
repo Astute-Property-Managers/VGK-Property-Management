@@ -1,11 +1,12 @@
 /**
- * Data Service - Centralized data management for VGK Property Command
- * Implements CRUD operations with localStorage (demo) - Replace with secure backend for production
+ * Data Service - Centralized data management for Altus
+ * Implements CRUD operations with browser storage adapter (localStorage in current runtime)
  */
 
 import { STORAGE_PREFIX, INITIAL_OPSP, INITIAL_ROCKS, INITIAL_KPIS, INITIAL_CRITICAL_NUMBERS, INITIAL_PROPERTIES, INITIAL_TENANTS, INITIAL_MAINTENANCE_REQUESTS, INITIAL_VENDORS, INITIAL_CHART_OF_ACCOUNTS, INITIAL_GENERAL_LEDGER_ENTRIES, INITIAL_CASHFLOW_FORECAST } from '../constants';
 import type { OnePageStrategicPlan, Rock, KPI, CriticalNumber, HuddleEntry, Property, Tenant, MaintenanceRequest, Vendor, Account, GeneralLedgerEntry, CashflowForecast } from '../types';
 import { sanitizeHtml, sanitizeObject } from './securityService';
+import { storageGetItem, storageSetItem } from './storageService';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -17,7 +18,7 @@ function getStorageKey(key: string): string {
 
 function saveToStorage<T>(key: string, data: T): void {
   try {
-    localStorage.setItem(getStorageKey(key), JSON.stringify(data));
+    storageSetItem(getStorageKey(key), JSON.stringify(data));
   } catch (error) {
     console.error(`Failed to save ${key}:`, error);
     throw new Error(`Storage error: Unable to save ${key}`);
@@ -26,7 +27,7 @@ function saveToStorage<T>(key: string, data: T): void {
 
 function loadFromStorage<T>(key: string, defaultValue: T): T {
   try {
-    const stored = localStorage.getItem(getStorageKey(key));
+    const stored = storageGetItem(getStorageKey(key));
     return stored ? JSON.parse(stored) : defaultValue;
   } catch (error) {
     console.error(`Failed to load ${key}:`, error);

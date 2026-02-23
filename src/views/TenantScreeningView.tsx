@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { TenantScreeningApplication, Property, ScreeningStatus } from '../types';
 import { sanitizeHtml } from '../services/securityService';
+import { storageGetItem, storageSetItem } from '../services/storageService';
 
 /**
  * TENANT SCREENING MODULE
@@ -40,7 +41,7 @@ export function TenantScreeningView() {
   }, []);
 
   function loadData() {
-    const stored = localStorage.getItem('vgk_data');
+    const stored = storageGetItem('vgk_data');
     if (stored) {
       const data = JSON.parse(stored);
       setApplications(data.tenantScreeningApplications || []);
@@ -49,11 +50,11 @@ export function TenantScreeningView() {
   }
 
   function saveApplications(apps: TenantScreeningApplication[]) {
-    const stored = localStorage.getItem('vgk_data');
+    const stored = storageGetItem('vgk_data');
     if (stored) {
       const data = JSON.parse(stored);
       data.tenantScreeningApplications = apps;
-      localStorage.setItem('vgk_data', JSON.stringify(data));
+      storageSetItem('vgk_data', JSON.stringify(data));
       setApplications(apps);
     }
   }

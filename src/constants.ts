@@ -1,5 +1,5 @@
 /**
- * Verne-Grisworld-Koch Property Command - Constants & Initial Data
+ * Altus - Constants & Initial Data
  */
 
 import type {
@@ -17,8 +17,8 @@ import type {
   CashflowEntry,
 } from './types';
 
-export const APP_NAME = 'Verne-Grisworld-Koch';
-export const APP_TAGLINE = 'Property Command - Strategic Excellence for Uganda';
+export const APP_NAME = 'Altus';
+export const APP_TAGLINE = 'Elevate your Estate';
 export const STORAGE_PREFIX = 'vgk_';
 
 // ============================================================================
@@ -40,14 +40,14 @@ export const INITIAL_OPSP: OnePageStrategicPlan = {
     'By 2027: Manage 1,500 residential units across Kampala, expand to 2 additional cities, implement fully automated financial reporting, achieve 98% tenant satisfaction.',
   annualTheme: 'Systems & Scale',
   annualInitiatives: [
-    'Implement VGK Command platform across all properties',
+    'Implement Altus platform across all properties',
     'Reduce vacancy rate to below 3%',
     'Achieve 95% on-time rent collection',
     'Establish preventative maintenance program',
   ],
   quarterlyTheme: 'Q1 2025: Foundation & Efficiency',
   quarterlyObjectives: [
-    'Onboard all 250 current units to VGK Command',
+    'Onboard all 250 current units to Altus',
     'Train all staff on Lean Finance principles',
     'Reduce maintenance response time to under 24 hours',
     'Complete IFRS compliance audit',
@@ -62,7 +62,7 @@ export const INITIAL_OPSP: OnePageStrategicPlan = {
 export const INITIAL_ROCKS: Rock[] = [
   {
     id: 'rock-1',
-    title: 'Launch VGK Command Platform',
+    title: 'Launch Altus Platform',
     description: 'Successfully deploy and train all staff on the new property management system',
     owner: 'Operations Manager',
     dueDate: '2025-03-31',

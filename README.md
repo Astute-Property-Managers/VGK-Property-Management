@@ -1,32 +1,57 @@
-﻿# Property Management System - Reference Architecture
+# Altus - Enterprise Property Management Platform
 
-## Purpose
-This is a **reference implementation** showcasing how modern web technologies
-can solve property management challenges in Kampala, Uganda.
+## Tagline
+**Elevate your Estate**
 
-## Created As
-- **Proof of Concept** for stakeholder discussions
-- **Technical Blueprint** for development teams
-- **Requirements Visualization** tool
-- **Training Material** for junior developers
+## Production cutover status
+Altus now includes a browser frontend wired for production state persistence through backend APIs,
+with local-only persistence disabled in production mode.
 
-## Development Approach
-- **AI-assisted rapid prototyping** to demonstrate feasibility
-- **Focus on architecture** over implementation details  
-- **Documentation-driven development** for clarity
-- **Designed for extension** by development teams
+## Backend + database capabilities
+- Authenticated API (`backend/server.mjs`)
+- RBAC (`admin`, `manager`, `operator`, `auditor`)
+- CRUD + archive + restore + delete lifecycle controls
+- Audit logs for auth and record/state actions
+- Login throttling controls
+- Token revocation (`POST /api/auth/logout`)
+- Strict CORS enforcement in production
+- SQLite operational database (`backend/altus.db`)
 
-## My Role
-As a **Solution Architect / IT Project Manager**:
-1. Defined business requirements and Uganda-specific features
-2. Designed system architecture and technology stack
-3. Created detailed specifications for development teams
-4. Used AI tools for rapid prototyping and validation
-5. Established deployment and maintenance procedures
+## DB Browser for SQLite connectivity
+Your DB Browser can open the backend database file directly:
+- File path: `backend/altus.db`
+- Ensure API is stopped before long read/write schema operations from DB Browser.
+- Relevant tables:
+  - `users`
+  - `records`
+  - `audit_logs`
+  - `kv_state`
+  - `revoked_tokens`
 
-## For Development Teams
-This repository serves as:
-- **Executable specification** - shows exactly what to build
-- **Technical reference** - architecture patterns and best practices
-- **Onboarding material** - gets new team members up to speed
-- **QA baseline** - expected behavior and functionality
+## Frontend production storage cutover
+- In `development`: frontend uses browser localStorage.
+- In `production`: frontend uses backend state API endpoints (`/api/state/:key`) and requires an authenticated user session token from `/api/auth/login`.
+
+## Run locally
+```bash
+npm install
+cp .env.example .env
+npm run api:start
+npm run dev
+```
+
+## Required production configuration
+- `VITE_APP_MODE=production`
+- `VITE_API_BASE_URL=https://your-api.example.com/api`
+- `ALTUS_JWT_SECRET=<strong secret>`
+- `ALTUS_ALLOWED_ORIGIN=https://your-frontend.example.com`
+- `ALTUS_ADMIN_PASSWORD=<strong bootstrap password>`
+
+## Core API endpoints
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/audit`
+- `GET|POST|PUT|DELETE /api/:entityType[/:id]`
+- `POST /api/:entityType/:id/archive`
+- `POST /api/:entityType/:id/restore`
+- `GET|PUT|DELETE /api/state/:key`
