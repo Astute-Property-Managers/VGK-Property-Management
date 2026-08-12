@@ -1,6 +1,6 @@
 # Altus — User Manual
 
-**Version 1.1**
+**Version 1.2**
 **Property Management System for Uganda**
 
 ---
@@ -13,13 +13,14 @@
 4. [Strategic Planning Module](#strategic-planning-module)
 5. [Property Operations Module](#property-operations-module)
 6. [Financial Management Module](#financial-management-module)
-7. [Best Practices](#best-practices)
-8. [Compliance & Reporting](#compliance--reporting)
-9. [Troubleshooting](#troubleshooting)
-10. [Glossary](#glossary)
-11. [Quick Reference Guide](#quick-reference-guide)
-12. [Support & Updates](#support--updates)
-13. [Appendices](#appendices)
+7. [Analytics Module](#analytics-module)
+8. [Best Practices](#best-practices)
+9. [Compliance & Reporting](#compliance--reporting)
+10. [Troubleshooting](#troubleshooting)
+11. [Glossary](#glossary)
+12. [Quick Reference Guide](#quick-reference-guide)
+13. [Support & Updates](#support--updates)
+14. [Appendices](#appendices)
 
 ---
 
@@ -46,28 +47,56 @@ Altus is a comprehensive property management system designed specifically for Ug
 
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Internet connection (for initial setup)
-- Network access to LAN server (for deployment)
+- **[Admin]** Server: Node.js ≥ 22.5 (Node 24 LTS recommended) for the backend API and SQLite database
 
 ### How to Read This Manual
 
 Sections are organized by module, in the order they appear in the sidebar. Items marked **[Admin]** are for the system administrator, not day-to-day users. Items marked **[Accountant]** should be confirmed with your CPA before acting.
 
+### Development vs Production Mode
+
+Altus runs in two modes:
+
+| | Development | Production |
+|---|---|---|
+| Where data lives | Browser localStorage | Server database (SQLite) via the API |
+| Sign-in required | No | Yes (username + password) |
+| Multi-user roles | No | Yes (see Roles below) |
+| Audit trail of actions | No | Yes |
+| Archive / restore records | No | Yes |
+| Typical use | Demo, training, single-user trial | Live operations |
+
+The screens work the same in both modes — this manual describes the screens once and flags mode-specific behavior where it matters.
+
 ---
 
 ## Getting Started
 
+### Signing In (Production)
+
+1. Open the application URL in your browser
+2. Enter your username and password
+3. You stay signed in for up to 8 hours; sign out when leaving a shared computer
+4. After 5 failed sign-in attempts, the account locks for 15 minutes
+
+**Roles** (assigned by your administrator):
+
+| Role | What you can do |
+|---|---|
+| **Admin** | Everything: manage records, archive/restore, permanently delete, manage settings, view audit log |
+| **Manager** | Day-to-day operations plus archive/restore; cannot permanently delete |
+| **Operator** | Day-to-day data entry: create and update records; cannot archive or delete |
+| **Auditor** | Read-only access to all records plus the audit log |
+
+**[Admin]** New deployments start with one admin account (credentials from environment configuration). Change the bootstrap password immediately, and create a separate account per person — shared accounts defeat the audit trail.
+
 ### First-Time Setup
 
-1. **Access the System**
-   - Open your web browser
-   - Navigate to the application URL
-   - The system loads with sample data for demonstration — replace it with your real data before going live
-
+1. **Access the System** — open your browser, navigate to the application URL (sign in, in production)
 2. **Understand the Interface**
    - **Sidebar Navigation**: Access all modules on the left
    - **Header**: Shows current date and system title
    - **Main Content Area**: Displays the selected module
-
 3. **Initial Data Entry — in this order**
    - Start with **Properties** (add your property portfolio)
    - Then **Tenants** (add current tenants with their lease details)
@@ -202,6 +231,8 @@ The Dashboard provides at-a-glance insight into your entire operation.
 | Maintenance Response Time | Days from request to completion | < 5 days |
 | Operating Expense Ratio (OER) | (Total expenses / Total income) × 100 | < 50% |
 
+> **See also:** Module 18 (80/20 Analytics) lets you mark up to 5 KPIs as your "Vital Few" for daily focus.
+
 ---
 
 ### 4. Critical Numbers
@@ -290,7 +321,7 @@ The Dashboard provides at-a-glance insight into your entire operation.
    - **Total Units**: Number of rentable units
    - **Occupied Units**: Currently rented (keep this in sync with your tenant records)
    - **Owner**: Property owner name
-   - **Acquisition Date**: When the property was acquired
+   - **Acquisition Date**: When property was acquired
    - **Status**: Active or Inactive
 3. Click "Save Property"
 
@@ -326,7 +357,7 @@ The Dashboard provides at-a-glance insight into your entire operation.
    - **Next Payment Date**: When rent is due
 3. Click "Save Tenant"
 
-> **Before you add a tenant — screening (Griswold standard):** verify identity (national ID), confirm income or employment, take references from a previous landlord where possible, and sign a written lease agreement *before* handing over keys. Record the lease start/end dates in the system on day one.
+> **Before you add a tenant:** run them through **Tenant Screening** (Module 8) and complete a **Move-In Inspection** (Module 10) on handover day. Tenants who skip screening are where collection problems come from.
 
 #### Recording Rent Payment
 
@@ -372,26 +403,17 @@ The Dashboard provides at-a-glance insight into your entire operation.
 - Scroll to the payment history section
 - See all payments with dates, amounts, and methods
 
-#### Lease Lifecycle: Renewals, Move-Outs, and Deposits
+#### The Tenant Lifecycle (Which Screen Does What)
 
-The system tracks lease dates and deposits — use these workflows around them:
-
-**Lease renewals** (start 60 days before lease end):
-1. Filter or scan tenant records for leases ending in the next 60 days
-2. Contact the tenant to confirm renewal or notice
-3. On renewal: edit the tenant record and update lease end date (and rent amount if adjusted)
-4. On non-renewal: schedule the unit turn (see below)
-
-**Move-out and security deposit refund**:
-1. Inspect the unit with the tenant; document condition (photos recommended — keep them with the lease file)
-2. Deduct legitimate costs (damage beyond normal wear, unpaid rent) from the deposit
-3. Refund the balance promptly; record the refund through your accountant as a manual GL entry (Debit: Security Deposits Payable 2100, Credit: Cash 1000)
-4. Remove or archive the tenant record and update the property's **Occupied Units** count — occupancy stats depend on it
-
-**Unit turn** (preparing the unit for the next tenant):
-1. Create a Maintenance Request for each repair needed (category and priority as appropriate)
-2. Complete cleaning, painting, and repairs — track costs against the property
-3. Re-list and screen the next tenant (target: vacancy under 30 days)
+| Stage | Screen | Module |
+|---|---|---|
+| Applicant applies and is vetted | Tenant Screening | 8 |
+| Lease signed, tenant added | Tenants | 7 |
+| Unit condition documented at handover | Move-In Inspection | 10 |
+| Rent collected monthly | Tenants (💰 Pay) | 7 |
+| Lease ending — renewal pipeline | Lease Renewals | 9 |
+| Tenant leaves — inspection + deposit refund | Move-Out Inspection | 10 |
+| Repairs before re-letting | Maintenance | 11 |
 
 **Best Practices**:
 - **Record payments daily** — don't let them pile up
@@ -401,7 +423,132 @@ The system tracks lease dates and deposits — use these workflows around them:
 
 ---
 
-### 8. Maintenance Requests
+### 8. Tenant Screening
+
+**Purpose**: Vet applicants *before* they become tenants — the Griswold standard application workflow. Good screening is the cheapest rent-collection tool you have.
+
+#### Creating an Application
+
+1. Click "+ New Application"
+2. **Basic Information**: Applicant name (required), email, phone, property (required), unit number
+3. **Employment Verification**: Current employer, job title, monthly income (UGX); tick **Employment Verified** once confirmed with the employer
+4. **Credit & Background**: Credit score (if available) and background check status (Pending / Clear / Issues Found)
+5. **Rental History**: Previous landlord and contact; tick **Rental History Verified** after speaking to them; flag **Eviction History** if any
+6. **References**: Add references (name, relationship, contact); tick **Verified** for each one actually checked
+7. Click "Submit Application"
+
+#### The Completion Score
+
+Each application shows a completion percentage — 25% each for:
+- Employment verified
+- Rental history verified
+- Credit score on file
+- At least 2 verified references
+
+**Do not approve an application below 100%.** An incomplete file means an unvetted tenant.
+
+#### Reviewing and Deciding
+
+1. Click "Review" on an application
+2. Work through the sections, add **Review Notes** (concerns, recommendations)
+3. Set status:
+   - **In Progress** → still collecting information
+   - **Pending Review** → file complete, awaiting decision
+   - **Approved** → proceed to lease signing, then add them in Tenants (Module 7)
+   - **Rejected** → a **Denial Reason is required** (keep it factual and professional)
+
+**Stats at the top** show your pipeline: In Progress / Pending Review / Approved / Rejected.
+
+**Best Practices**:
+- Verify identity against a national ID before anything else
+- Rent should not exceed roughly one-third of verified monthly income
+- Always call the previous landlord — the current one may give a glowing reference to get rid of a problem tenant
+- Keep screening records: they are your defense if a decision is ever questioned
+
+---
+
+### 9. Lease Renewals
+
+**Purpose**: Never be surprised by an expiring lease. Implements Griswold's **120-day standard**: start the renewal conversation four months before lease end.
+
+#### How the Pipeline Works
+
+1. Click **"🔄 Scan for Upcoming Renewals"** — the system finds every tenant whose lease ends within 120 days and adds them to the pipeline (already-tracked tenants are skipped)
+2. Each renewal moves through statuses:
+   - **Upcoming** → detected, no action yet
+   - **Notice Sent** → renewal notice sent (click "Send Notice" — logged automatically)
+   - **Negotiating** → tenant responded, terms under discussion
+   - **Accepted** → renewal agreed; update the tenant's lease end date (and rent) in Module 7
+   - **Declined** → tenant leaving; schedule a Move-Out Inspection (Module 10)
+   - **Expired** → lease lapsed without resolution (treat as urgent)
+
+**Days Left** is color-coded: red < 30, orange < 60, yellow < 90 days.
+
+#### Managing a Renewal
+
+Click "Manage" on any renewal:
+
+1. **Renewal Proposal**
+   - **Proposed Rent (UGX)**: the system instantly shows the increase, e.g. `+50,000 UGX (10.0%)`
+   - **Proposed Lease Term**: months (default 12)
+2. **Status & Response**: track the tenant's response (Interested / Negotiating / Declined) and tick **Owner Approval Received** when the property owner signs off on the new terms
+3. **Communication Log**: record every touchpoint — Email, Call, In-Person, or SMS — with a summary and who made contact. This log is your evidence if a dispute arises about who was told what, when.
+4. **Notes**: anything else worth remembering
+
+**Best Practices**:
+- Run the scan **monthly** (it's in the Monthly Checklist)
+- Send notices at the 120-day mark, not the 30-day mark — early notice gives you time to re-let without vacancy
+- Justify every rent increase with market comparison and property improvements; document the reasoning in Notes
+- If a good tenant hesitates at an increase, a smaller increase usually beats a vacant unit
+
+---
+
+### 10. Move-In / Move-Out Inspections
+
+**Purpose**: Document unit condition at both ends of a tenancy. This is what makes security-deposit deductions defensible instead of argumentative.
+
+#### Move-In Inspection (on handover day)
+
+1. Click "+ New Move-In"
+2. Select tenant and property (required), unit number, and **Inspected By** (required)
+3. Work through the **checklist** — pre-loaded with the standard 12 items (Living Room, Kitchen, Bathroom, Bedroom: walls, floors, windows, cabinets, appliances, plumbing, toilet, shower, sink, closet)
+   - Rate each: Excellent / Good / Fair / Poor / Damaged
+   - Add notes per item; add custom items for anything unusual
+4. **Security Deposit**: enter the amount and tick **Deposit Received**
+5. Save — then have the tenant sign a printed copy
+
+> Do this **with the tenant present**, on the day they get the keys, before their furniture goes in. Photos of every room, stored with the lease file, settle 95% of later deposit disputes.
+
+#### Move-Out Inspection (when the tenant leaves)
+
+1. Click "+ New Move-Out"
+2. Same checklist, plus per-item **Repair Required** and **Estimated Repair Cost**
+3. **Deposit Deductions**: add each deduction with a category:
+   - Cleaning
+   - Repairs
+   - Unpaid Rent
+   - Other
+4. The **Deposit Calculation** panel computes automatically:
+   - Security Deposit Held − Total Deductions = **Refund to Tenant**
+5. Record unpaid rent, utilities, or other charges separately
+6. Save; refund the balance promptly
+
+**The dashboard cards** show totals: move-ins, move-outs, deposits currently held, and deposits returned.
+
+#### Booking the Refund
+
+**[Accountant]** The refund is a manual GL entry (Module 17): Debit **Security Deposits Payable (2100)**, Credit **Cash (1000)** for the refund amount; any deductions kept for repairs are recognized against the relevant expense or income account per your CPA.
+
+After move-out, update the property's **Occupied Units** count (Module 6) and raise Maintenance requests for repairs (Module 11).
+
+**Best Practices**:
+- Same inspector for move-in and move-out where possible, using the same checklist
+- Deduct only for damage beyond normal wear and tear — and price deductions from actual vendor quotes
+- Refund within the timeframe stated in the lease; delays sour your reputation and invite disputes
+
+---
+
+### 11. Maintenance Requests
 
 **Purpose**: Track maintenance from request to completion. Response time drives tenant satisfaction.
 
@@ -437,6 +584,8 @@ The system tracks lease dates and deposits — use these workflows around them:
    - **Actual Cost**: Final invoice amount
    - Track the variance to improve future estimates
 
+> Completed maintenance with costs flows into **Owner Statements** (Module 15) and the **80/20 Analytics** (Module 18) automatically — accurate cost entry here pays off twice.
+
 #### Viewing Performance
 
 **Stats dashboard**:
@@ -458,7 +607,7 @@ The system tracks lease dates and deposits — use these workflows around them:
 
 ---
 
-### 9. Vendors
+### 12. Vendors
 
 **Purpose**: Manage your contractor network. 20% of vendors do 80% of the work.
 
@@ -511,7 +660,7 @@ Update ratings based on:
 
 ## Financial Management Module
 
-### 10. Cashflow Forecast
+### 13. Cashflow Forecast
 
 **Purpose**: "Cash is oxygen" — Verne Harnish. Never run out.
 
@@ -561,7 +710,7 @@ The **12-month table** shows, for each month:
 
 ---
 
-### 11. Financial Overview
+### 14. Financial Overview
 
 **Purpose**: Business health at a glance — the Lean Finance dashboard.
 
@@ -587,7 +736,7 @@ The **12-month table** shows, for each month:
 - **Why it matters**: Cash-flow health
 - **Actions**:
   - < 95% = send reminders, follow up on overdue accounts
-  - < 90% = review your tenant screening process
+  - < 90% = review your tenant screening process (Module 8)
 
 **4. Vacancy Rate**
 - **Formula**: (Vacant units / Total units) × 100
@@ -619,12 +768,49 @@ A **Lean Finance one-page view** for each property:
 **Best Practices**:
 - Review **weekly** in huddles
 - Investigate any **red indicator** immediately
-- Use for **monthly owner reports**
+- Use for **monthly owner reports** (or generate full statements — Module 15)
 - Track trends over time to spot issues early
 
 ---
 
-### 12. Chart of Accounts
+### 15. Owner Statements
+
+**Purpose**: One-click monthly financial statements per property — the document you send each property owner. Replaces the manual screenshot-and-stitch reporting routine.
+
+#### Generating a Statement
+
+1. Select the **Property** and the **Period** (month, e.g. 2026-07)
+2. Click **Generate Statement**
+
+The system assembles the statement automatically:
+
+| Section | Where the data comes from |
+|---|---|
+| **Rent Roll** | Every tenant of the property: rent due, amount received, Paid / Partial / Unpaid status, and the month's **collection rate** |
+| **Maintenance Summary** | Maintenance requests **completed within the month**, with vendor and actual cost |
+| **Expense Ledger** | General Ledger expense entries (5000-series accounts) for the property in the month |
+| **Management Fee** | Calculated at **10% of rent received** |
+| **Net Owner Disbursement** | Gross income − expenses − maintenance − management fee |
+| **Variance Analysis** | This month's net income vs last month's (requires the previous month's statement to exist) |
+
+#### Reviewing and Sending
+
+1. Click "View Details" on the statement
+2. Check the summary cards: Gross Income, Total Deductions, Net Disbursement, Collection Rate
+3. Add **Manager Commentary** — two or three sentences on notable events (a big repair, a new tenant, a vacancy) and your recommendation. Owners read this first.
+4. Send to the owner
+
+> **Note:** The "📄 Export PDF" button is a **planned feature** — for now, print the statement view to PDF from your browser (Ctrl+P → Save as PDF) and attach that to your email.
+
+**Best Practices**:
+- Generate statements in the **first week of the month** for the month just ended (it's in the Monthly Checklist)
+- Reconcile the statement against the General Ledger before sending — the statement is only as good as your payment recording discipline
+- A collection rate below 95% on any statement deserves an explanation in the commentary
+- Keep every statement: they form the owner's annual record for their own tax affairs
+
+---
+
+### 16. Chart of Accounts
 
 **Purpose**: IFRS-compliant account structure for proper bookkeeping.
 
@@ -690,7 +876,7 @@ The system ships with an **ICPAU-aligned** Chart of Accounts:
 
 ---
 
-### 13. General Ledger
+### 17. General Ledger
 
 **Purpose**: The complete audit trail of all transactions — the foundation of double-entry bookkeeping.
 
@@ -728,7 +914,7 @@ The system creates GL entries automatically when you:
 
 #### Manual Entries
 
-For transactions the forms don't cover (e.g., security deposit refunds, opening balances, corrections), your accountant creates manual journal entries.
+For transactions the forms don't cover (e.g., security deposit refunds — see Module 10, opening balances, corrections), your accountant creates manual journal entries.
 
 **Best Practices**:
 - **Review monthly** for accuracy
@@ -736,6 +922,39 @@ For transactions the forms don't cover (e.g., security deposit refunds, opening 
 - **Use for tax prep** (URA compliance)
 - **Keep for audit trail** (ICPAU requirement)
 - **Export for accountant** review
+
+---
+
+## Analytics Module
+
+### 18. 80/20 Analytics Engine
+
+**Purpose**: Apply Koch's Pareto Principle to your portfolio — find the vital few tenants, properties, and KPIs that drive (or threaten) 80% of your results. No data entry needed: everything is computed from the records you already keep.
+
+#### Tab 1: Tenant 80/20 Analysis
+
+- **Top-line stats**: Total tenants, how many are in the top 20%, what share of revenue that 20% generates, and the count of high-risk tenants
+- **Pareto chart**: Top 10 tenants by total rent paid
+- **Top 20% Revenue Contributors**: ranked table — revenue, net contribution (revenue minus their maintenance costs), on-time payment %, and risk level. **These tenants pay the bills — treat them accordingly** (priority maintenance, personal renewal conversations)
+- **🚨 High-Risk Tenants**: the riskiest 20%, ranked by a 0–100 **risk score** built from payment status, on-time rate, and maintenance frequency, mapped to **eviction risk** (Low / Medium / High). Work this list weekly: reminders, payment plans, or — for chronic cases — non-renewal at lease end (Module 9)
+
+#### Tab 2: Property 80/20 Analysis
+
+- **Pareto chart**: Income vs NOI per property
+- **Performance Rankings**: every property with Income, NOI, OER, Net Yield, Occupancy, and income rank — top-20% properties are starred ⭐
+- **🐄 Cash Cows vs ⚠️ Underperformers**: your best and bottom 20% by NOI side by side
+- **Use it for portfolio decisions**: an underperformer with high OER and low occupancy for several quarters is a candidate for repricing, renovation, or disposal
+
+#### Tab 3: Vital Few KPIs
+
+- Select up to **5 KPIs** (from Module 3) as your **Vital Few**
+- They pin to the top with achievement bars; everything else stays in "Trivial Many"
+- **Use it in daily huddles**: glance at the Vital Few; only dig into the rest weekly
+
+**Best Practices**:
+- Review Tenant 80/20 **weekly** (who pays us, who might leave, who might need to go)
+- Review Property 80/20 **monthly** (where to invest, where to fix, what to exit)
+- Keep Vital Few to 5 — the whole point is focus
 
 ---
 
@@ -759,11 +978,13 @@ For transactions the forms don't cover (e.g., security deposit refunds, opening 
 1. Weekly Huddle — review Rocks, KPIs, Critical Numbers
 2. Send rent reminders to overdue tenants
 3. Review cashflow for the coming week
+4. Check 80/20 Analytics → high-risk tenants list
 
 **Friday afternoon (30 min)**
 1. Update all KPIs with the week's data
 2. Review maintenance requests — assign any pending
 3. Check the Financial Overview for the week's performance
+4. Review new screening applications — keep the pipeline moving
 
 ### Monthly Routine (half day)
 
@@ -771,14 +992,15 @@ For transactions the forms don't cover (e.g., security deposit refunds, opening 
 1. Review the previous month's financial performance
 2. Compare cashflow actual vs projected
 3. Update cashflow projections if needed
-4. Generate owner reports (Financial Overview)
+4. **Generate Owner Statements** (Module 15) and send them
 5. Review and update Critical Numbers
 6. Plan focus areas for the month
 
 **Last week of the month**
 1. Send next month's rent reminders
-2. Review lease renewals coming due in the next 60 days
+2. **Run "Scan for Upcoming Renewals"** (Module 9) — leases expire whether you watch or not
 3. Schedule preventive maintenance
+4. Review Property 80/20 rankings
 
 ### Quarterly Routine (full day)
 
@@ -794,7 +1016,7 @@ For transactions the forms don't cover (e.g., security deposit refunds, opening 
 1. Full-quarter financial review
 2. Update the 3-year picture in the OPSP if needed
 3. Vendor performance review — update ratings
-4. Property portfolio analysis — identify improvements
+4. Property portfolio analysis (80/20 Analytics) — identify improvements
 
 ---
 
@@ -864,26 +1086,20 @@ The system follows **IFRS** (International Financial Reporting Standards):
 
 ### Data Protection (Tenants' Personal Data)
 
-Tenant records — names, phone numbers, payment histories — are **personal data** under Uganda's **Data Protection and Privacy Act, 2019**. Practical obligations:
+Tenant records — names, phone numbers, screening files, payment histories — are **personal data** under Uganda's **Data Protection and Privacy Act, 2019**. Practical obligations:
 
 - Collect only the tenant data you actually need
 - Use it only for managing the tenancy (e.g., rent reminders), not unrelated purposes
 - Keep it accurate and up to date
-- Restrict access to people who need it for their work
-- **[Admin]** The current version stores data in the browser's localStorage, which is **not encrypted** — do not use shared computers, and plan the move to the database backend (see Appendix B) before scaling
+- Restrict access: in production, give each staff member their own account with the **lowest role** that lets them do their job; the auditor role exists for read-only review
+- Screening files are especially sensitive — reject decisions must record a factual **Denial Reason**, never speculation
+- **[Admin]** Neither the browser localStorage (development) nor the SQLite file (production) is encrypted at rest. Protect the server machine itself: full-disk encryption, locked screen, OS updates, and restricted physical access.
 
 ### Monthly Reporting
 
 #### For Property Owners
 
-**Generate the monthly report** (~30 minutes):
-
-1. **Financial Overview**: Screenshot or print the Box Score for each property — NOI, OER, income/expenses
-2. **Rent Roll**: From Tenants, export or print the tenant list — occupancy, payment status, rent amounts
-3. **Maintenance Summary**: From Maintenance, filter by property and date range — requests completed, costs, response times
-4. **Cashflow**: Current month actual vs projected, plus the next 3 months' forecast
-
-**Send to the owner**: Combine into a single email or PDF.
+Use **Owner Statements (Module 15)** — generate one per property, add commentary, print to PDF, send. Done in minutes instead of the old screenshot routine.
 
 #### For Internal Management
 
@@ -892,6 +1108,7 @@ Tenant records — names, phone numbers, payment histories — are **personal da
 - KPI status (all should be GREEN or YELLOW)
 - Critical Numbers trend (improving or declining?)
 - Rocks progress (on track for the quarter?)
+- 80/20 Analytics: high-risk tenants, underperforming properties
 
 ---
 
@@ -916,6 +1133,12 @@ Tenant records — names, phone numbers, payment histories — are **personal da
 2. **[Admin]** Verify SMS credits are available with the provider
 3. In the meantime, send reminders manually by phone
 
+#### "Can't Sign In" / "Locked Out"
+
+- 5 failed attempts lock the account for **15 minutes** — wait, then try again carefully
+- If you forgot the password, ask your administrator to reset it
+- **[Admin]** Accounts can be deactivated; a deactivated account is signed out everywhere immediately, even mid-session
+
 #### "Can't See a Recent Payment in Reports"
 
 **Cause**: Page not refreshed after payment entry
@@ -933,31 +1156,21 @@ Tenant records — names, phone numbers, payment histories — are **personal da
 3. Update "Occupied Units" to match current tenants
 4. The rate recalculates from this number
 
-#### "Can't Find a Deleted Item"
+#### "Something Was Deleted by Mistake"
 
-**Cause**: Deletion is permanent (no trash/recycle bin)
-**Solution**:
-- **Prevention**: The system confirms before deleting — read the prompt carefully
-- **Recovery**: Not possible in the localStorage version
-- **[Admin]** For production: implement database backups (nightly recommended)
+- **Production mode**: use **Archive** instead of Delete wherever possible — archived records can be **restored** (managers and admins). Permanent delete is admin-only and cannot be undone, but the action is recorded in the **audit log** (who, what, when).
+- **Development mode**: deletion is permanent and there is no audit log — be careful.
 
 ### Data Backup
 
-**Current system (localStorage)**:
-- Data is stored in the browser's localStorage
-- **Risk**: Clearing the browser or reinstalling = **data loss**
-- **Mitigation**: Regular manual backups
+**Production mode**:
+- All data lives in the SQLite file at `backend/altus.db` on the server
+- **[Admin]** Back it up by copying the file while the API is stopped (or use an online backup tool such as `sqlite3 .backup`); **nightly, with at least 30 days of retention**
+- Keep one copy off the server (another machine or cloud storage)
 
-**Manual backup process**:
-1. Open browser Developer Tools (F12)
-2. Application tab → Local Storage
-3. Copy all data
-4. Save to a text file (weekly minimum), stored somewhere safe
-
-**[Admin] Production recommendation**:
-- Migrate to a database backend (PostgreSQL)
-- Implement automated nightly backups
-- Keep at least 30 days of backups
+**Development mode**:
+- Data lives in the browser's localStorage — clearing the browser erases everything
+- Manual backup: Developer Tools (F12) → Application → Local Storage → copy to a text file (weekly minimum)
 
 ### Performance Issues
 
@@ -977,7 +1190,7 @@ Tenant records — names, phone numbers, payment histories — are **personal da
 
 | Issue type | Who to contact |
 |---|---|
-| Technical (database, backups, access, SMS, performance) | System administrator |
+| Technical (server, backups, accounts, SMS, performance) | System administrator |
 | Tax compliance, reporting standards, IFRS/ICPAU, chart of accounts | Your accountant / CPA |
 | Best practices, process optimization, tenant relations | Property management consultant |
 
@@ -996,6 +1209,8 @@ Tenant records — names, phone numbers, payment histories — are **personal da
 - **Unit Turn**: Process of preparing a unit for a new tenant after move-out
 - **Security Deposit**: Refundable deposit held against damage and unpaid rent
 - **Lease**: Legal agreement between landlord and tenant
+- **Owner Statement**: Monthly per-property financial report sent to the property owner
+- **Net Owner Disbursement**: What the owner actually receives after expenses and management fees
 
 ### Scaling Up Terms (Verne Harnish)
 
@@ -1031,13 +1246,15 @@ Tenant records — names, phone numbers, payment histories — are **personal da
 - **OER**: Operating Expense Ratio = (Expenses / Income) × 100
 - **ROI**: Return on Investment = (Gain − Cost) / Cost × 100
 - **Cap Rate**: Capitalization Rate = NOI / Property Value
+- **Net Yield**: NOI / Total Income × 100
 - **Debt Service Coverage Ratio**: NOI / Debt Payments
 
-### Lean Finance Terms
+### Lean Finance & 80/20 Terms
 
 - **Lean**: Eliminate waste, focus on value
 - **Value Stream**: Flow of value to the customer (tenant)
 - **80/20 Principle (Pareto)**: 80% of results come from 20% of efforts
+- **Vital Few**: The small number of KPIs/tenants/properties that drive most results
 - **Box Score**: One-page financial summary per property
 - **Visual Management**: Make metrics visible to all
 
@@ -1057,15 +1274,18 @@ Tenant records — names, phone numbers, payment histories — are **personal da
 - [ ] Update Rock progress
 - [ ] Review and update KPIs
 - [ ] Assign pending maintenance requests
+- [ ] Review 80/20 high-risk tenants list
+- [ ] Progress screening applications in the pipeline
 
 ### Monthly Checklist
 - [ ] Review previous month's financials
 - [ ] Compare cashflow actual vs projected
-- [ ] Generate owner reports
+- [ ] **Generate and send Owner Statements**
 - [ ] Update Critical Numbers
 - [ ] Review maintenance costs
 - [ ] Send next month's rent reminders
-- [ ] Check leases expiring in the next 60 days
+- [ ] **Run "Scan for Upcoming Renewals"** (120-day pipeline)
+- [ ] Review Property 80/20 rankings
 
 ### Quarterly Priorities
 - [ ] Review previous quarter's Rocks
@@ -1081,13 +1301,14 @@ Tenant records — names, phone numbers, payment histories — are **personal da
 - [ ] Confirm VAT registration status against the UGX 300M threshold
 - [ ] Verify records retention (minimum 5 years)
 - [ ] Review insurance cover on all properties
+- [ ] **[Admin]** Verify backup routine is running and test a restore
 
 ---
 
 ## Support & Updates
 
 ### System Version
-- Current Version: 1.1
+- Current Version: 1.2
 - Manual last updated: August 2026
 - Next manual review: November 2026
 
@@ -1112,7 +1333,7 @@ Tenant records — names, phone numbers, payment histories — are **personal da
 
 ### Appendix A: Keyboard Shortcuts (Planned)
 
-Not yet implemented in v1.1 — target for a future release:
+Not yet implemented — target for a future release:
 
 - **Ctrl+N**: New item (context-aware)
 - **Ctrl+S**: Save current form
@@ -1123,23 +1344,26 @@ Not yet implemented in v1.1 — target for a future release:
 
 ### Appendix B: Known Limitations & Roadmap (for Administrators)
 
-Current limitations of v1.1:
-- **Browser-based storage (localStorage)**: single-computer, single-browser; unencrypted; lost if the browser profile is cleared
-- **No user accounts or roles**: anyone with access to the browser can see all data
-- **No automated backups**: manual export only (see Troubleshooting → Data Backup)
-- **Deletion is permanent**: no undo or recycle bin
+Current limitations:
+- **SQLite is single-server**: fine for one office/LAN; not designed for multiple simultaneous sites
+- **No automated backups yet**: backup of `backend/altus.db` is a manual administrator task (nightly recommended)
+- **Owner Statement PDF export**: placeholder — use the browser's Print → Save as PDF
+- **Photo storage**: inspection photos must be kept outside the system alongside the lease file
+- **No encryption at rest**: protect the server machine (disk encryption, physical access)
 
 Recommended roadmap:
-1. Migrate to a database backend (PostgreSQL) with user authentication and role-based access
-2. Automated nightly backups (30-day retention minimum)
-3. Soft-delete / audit log for all record changes
-4. Encrypted storage for tenant personal data (Data Protection and Privacy Act alignment)
+1. Automated nightly database backups (30-day retention minimum)
+2. Native PDF export for Owner Statements
+3. Photo upload attached to inspections and maintenance requests
+4. Encryption at rest for the database (Data Protection and Privacy Act alignment)
+5. PostgreSQL backend if multi-site or high-concurrency use emerges
 
 ---
 
-**Document Version**: 1.1
+**Document Version**: 1.2
 **Last Updated**: August 2026
-**Changes in v1.1**: Corrected URA rental income tax section (individual vs company treatment, UGX 2,820,000 threshold, monthly provisional filing option from FY 2026/27); updated VAT registration threshold to UGX 300M (effective 1 July 2026); added lease lifecycle workflows (renewals, move-outs, deposits, unit turn); added data protection guidance; separated administrator and accountant notes from end-user content; added annual tax-year checklist.
+**Changes in v1.2**: Documented the production architecture — sign-in, roles (admin/manager/operator/auditor), audit log, archive/restore; added five modules: Tenant Screening, Lease Renewals (120-day pipeline), Move-In/Move-Out Inspections, Owner Statements, and the 80/20 Analytics Engine; updated backup and deletion guidance for the database backend; refreshed best-practice routines and checklists.
+**Changes in v1.1**: Corrected URA rental income tax section (individual vs company treatment, UGX 2,820,000 threshold, monthly provisional filing option from FY 2026/27); updated VAT registration threshold to UGX 300M (effective 1 July 2026); added lease lifecycle workflows; added data protection guidance; separated administrator and accountant notes from end-user content; added annual tax-year checklist.
 
 ---
 
