@@ -4,11 +4,15 @@
   "description": "Altus browser-based property management platform for Uganda",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "serve": "vite preview --host",
+    "lint": "eslint src --ext .ts,.tsx",
     "api:start": "node backend/server.mjs",
     "api:dev": "node --watch backend/server.mjs"
   },
