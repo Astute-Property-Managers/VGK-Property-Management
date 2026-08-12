@@ -1,7 +1,7 @@
 import http from 'node:http';
 import { URL } from 'node:url';
 import {
-  initDatabase, getUserByUsername, listRecords, getRecord, createRecord, updateRecord, setRecordStatus,
+  initDatabase, getUserByUsername, getUserById, listRecords, getRecord, createRecord, updateRecord, setRecordStatus,
   hardDeleteRecord, logAudit, listAuditLogs, revokeTokenJti, isTokenRevoked, getState, setState, deleteState
 } from './db.mjs';
 import { issueToken, verifyPassword, verifyToken } from './auth.mjs';
@@ -15,6 +15,14 @@ const ENTITY_ALLOWLIST = new Set(['properties','tenants','maintenance','vendors'
 const loginAttempts = new Map();
 const MAX_ATTEMPTS = Number(process.env.ALTUS_LOGIN_MAX_ATTEMPTS || 5);
 const LOCKOUT_MS = Number(process.env.ALTUS_LOGIN_LOCKOUT_MS || 15 * 60 * 1000);
+
+// Periodically sweep expired lockout entries so the map cannot grow unbounded.
+setInterval(() => {
+  const cutoff = Date.now() - LOCKOUT_MS;
+  for (const [key, record] of loginAttempts) {
+    if (record.lastAttempt < cutoff) loginAttempts.delete(key);
+  }
+}, LOCKOUT_MS).unref();
 
 function corsHeaders(req) {
   const origin = req.headers.origin;
@@ -32,9 +40,23 @@ function sendJson(req,res,status,payload){
 }
 function sendRaw(res,status,text){ res.writeHead(status,{ 'Content-Type':'text/plain; charset=utf-8' }); res.end(text); }
 function parseBody(req){return new Promise((resolve,reject)=>{let raw=''; req.on('data',(c)=>{raw+=c;if(raw.length>2_000_000){reject(new Error('Payload too large'));req.destroy();}}); req.on('end',()=>{if(!raw)return resolve({});try{resolve(JSON.parse(raw));}catch{reject(new Error('Invalid JSON payload'));}}); req.on('error',reject);});}
-function authFromRequest(req){const h=req.headers.authorization||'';const[,token]=h.split(' '); const claims=verifyToken(token); if(!claims) return null; if(isTokenRevoked(claims.jti)) return null; return {token,claims}; }
+function authFromRequest(req){
+  const h=req.headers.authorization||'';const[,token]=h.split(' ');
+  const claims=verifyToken(token); if(!claims) return null;
+  if(isTokenRevoked(claims.jti)) return null;
+  // Re-check the account on every request: deactivated or deleted users lose access immediately,
+  // even if their token has not yet expired.
+  const dbUser=getUserById(claims.sub);
+  if(!dbUser||!dbUser.active) return null;
+  return {token,claims};
+}
 const requireRole=(u,roles)=>u&&roles.includes(u.role);
-function checkLockout(key){ const r=loginAttempts.get(key); if(!r) return false; if(r.count<MAX_ATTEMPTS) return false; return (Date.now()-r.lastAttempt)<LOCKOUT_MS; }
+function checkLockout(key){
+  const r=loginAttempts.get(key); if(!r) return false;
+  // Lockout window has passed: clear the record so the user gets a fresh set of attempts.
+  if((Date.now()-r.lastAttempt)>=LOCKOUT_MS){ loginAttempts.delete(key); return false; }
+  return r.count>=MAX_ATTEMPTS;
+}
 function recordFailedLogin(key){ const r=loginAttempts.get(key)||{count:0,lastAttempt:0}; r.count+=1; r.lastAttempt=Date.now(); loginAttempts.set(key,r); }
 function clearLoginAttempts(key){ loginAttempts.delete(key); }
 
@@ -102,6 +124,6 @@ const server=http.createServer(async(req,res)=>{
     if(req.method==='POST'&&entityId&&action==='restore'){if(!requireRole(user,['admin','manager'])) return sendJson(req,res,403,{error:'Forbidden'}); const restored=setRecordStatus({entityType,id:entityId,status:'active',actorUserId:user.sub}); if(!restored) return sendJson(req,res,404,{error:'Not found'}); logAudit({actorUserId:user.sub,actorUsername:user.username,action:'record.restore',entityType,entityId}); return sendJson(req,res,200,{ok:true});}
     if(req.method==='DELETE'&&entityId){if(!requireRole(user,['admin'])) return sendJson(req,res,403,{error:'Forbidden'}); if(!hardDeleteRecord({entityType,id:entityId})) return sendJson(req,res,404,{error:'Not found'}); logAudit({actorUserId:user.sub,actorUsername:user.username,action:'record.delete',entityType,entityId}); return sendJson(req,res,200,{ok:true});}
     return sendJson(req,res,405,{error:'Method not allowed'});
-  }catch(error){ return sendJson(req,res,500,{error:'Internal server error',detail:error.message}); }
+  }catch(error){ console.error('Unhandled API error:', error); return sendJson(req,res,500,{error:'Internal server error'}); }
 });
 server.listen(PORT,()=>console.log(`Altus API listening on http://localhost:${PORT}`));

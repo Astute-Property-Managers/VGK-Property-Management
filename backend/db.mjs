@@ -54,6 +54,7 @@ function seedAdmin() {
     .run(randomUUID(), username, hash, salt, now, now);
 }
 export const getUserByUsername = (username) => db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+export const getUserById = (id) => db.prepare('SELECT * FROM users WHERE id = ?').get(id);
 export function logAudit({ actorUserId, actorUsername, action, entityType, entityId = null, metadata = {} }) {
   db.prepare('INSERT INTO audit_logs (id, actor_user_id, actor_username, action, entity_type, entity_id, metadata_json, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
     .run(randomUUID(), actorUserId, actorUsername, action, entityType, entityId, JSON.stringify(metadata), nowIso());
