@@ -17,6 +17,10 @@ with local-only persistence disabled in production mode.
 - Strict CORS enforcement in production
 - SQLite operational database (`backend/altus.db`)
 
+## Requirements
+- Node.js >= 22.5 (Node 24 LTS recommended) — the backend uses the built-in `node:sqlite` module. On Node versions where it is still flagged as experimental, start the API with `node --experimental-sqlite backend/server.mjs`.
+- npm (ships with Node)
+
 ## DB Browser for SQLite connectivity
 Your DB Browser can open the backend database file directly:
 - File path: `backend/altus.db`
@@ -40,12 +44,18 @@ npm run api:start
 npm run dev
 ```
 
+## Quality checks
+```bash
+npm run lint    # ESLint over src/
+npm run build   # tsc type-check + Vite production build
+```
+
 ## Required production configuration
 - `VITE_APP_MODE=production`
 - `VITE_API_BASE_URL=https://your-api.example.com/api`
-- `ALTUS_JWT_SECRET=<strong secret>`
+- `ALTUS_JWT_SECRET=<strong secret>` (startup fails in production if unset/default)
 - `ALTUS_ALLOWED_ORIGIN=https://your-frontend.example.com`
-- `ALTUS_ADMIN_PASSWORD=<strong bootstrap password>`
+- `ALTUS_ADMIN_PASSWORD=<strong bootstrap password>` (startup fails in production if unset/default)
 
 ## Core API endpoints
 - `POST /api/auth/login`
@@ -55,3 +65,6 @@ npm run dev
 - `POST /api/:entityType/:id/archive`
 - `POST /api/:entityType/:id/restore`
 - `GET|PUT|DELETE /api/state/:key`
+
+## License
+Proprietary — see `LICENSE`.
